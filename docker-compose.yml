@@ -1,0 +1,83 @@
+version: "3.9"
+
+services:
+  C4lendar-DB:
+    image: mariadb:11
+    container_name: C4lendar-DB
+    environment:
+      MARIADB_ROOT_PASSWORD: "DB_Pass"
+      MARIADB_DATABASE: "DB_Name"
+      MARIADB_USER: "DB_User"
+      MARIADB_PASSWORD: "DB_Pass"
+    volumes:
+      - c4lendar_db_data:/var/lib/mysql
+    ports:
+      - "3308:3306"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 300s
+
+  C4lendar-BE:
+    image: node:20-alpine
+    container_name: C4lendar-BE
+    working_dir: /app
+    environment:
+      DB_HOST: "C4lendar-DB"
+      DB_PORT: "3306"
+      DB_USER: "DB_User"
+      DB_PASS: "DB_Pass"
+      DB_NAME: "DB_Name"
+      JWT_SECRET: "JWT_TOKEN"
+      PORT: "4000"
+    volumes:
+      - ./backend:/app
+      - excem_node_modules:/app/node_modules
+    command: sh -c "npm install && node server.js"
+    depends_on:
+      C4lendar-DB:
+        condition: service_healthy
+    restart: unless-stopped
+
+  C4lendar-Certs:
+    image: alpine/openssl
+    container_name: C4lendar-Certs
+    restart: "no"
+    volumes:
+      - c4lendar_certs:/certs
+    entrypoint: sh -c "
+      mkdir -p /certs &&
+      if [ ! -f /certs/server.crt ] || [ ! -f /certs/server.key ]; then
+        echo 'Generando certificado autofirmado...' &&
+        openssl req -x509 -nodes -days 3650 -newkey rsa:2048
+          -keyout /certs/server.key
+          -out /certs/server.crt
+          -subj '/CN=C4lendar'
+          -addext 'subjectAltName=IP:CAMBIAR_IP,DNS:localhost';
+        echo 'Certificado generado.';
+      else
+        echo 'Certificado ya existe, omitiendo.';
+      fi"
+
+  C4lendar-FE:
+    image: nginx:1.27-alpine
+    container_name: C4lendar-FE
+    depends_on:
+      - C4lendar-BE
+      - C4lendar-Certs
+    ports:
+      - "8083:80"
+      - "8443:443"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - c4lendar_certs:/etc/nginx/certs:ro
+    restart: unless-stopped
+
+volumes:
+  excem_node_modules:
+  c4lendar_db_data:
+  c4lendar_certs:
