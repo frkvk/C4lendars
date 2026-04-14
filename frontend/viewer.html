@@ -467,23 +467,40 @@
 
     // ── iCal parser ───────────────────────────────────────────────
     function parseICS(text) {
-      var events = [], lines = text.replace(/\r\n /g,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
-      var current = null;
-      lines.forEach(function(line) {
-        if (line === 'BEGIN:VEVENT') { current = {}; return; }
-        if (line === 'END:VEVENT') {
-          if (current && current.start && current.end && current.title) events.push(current);
-          current = null; return;
-        }
-        if (!current) return;
-        if (line.startsWith('SUMMARY:'))           current.title = line.slice(8).trim();
-        if (line.startsWith('DTSTART'))             current.start = parseICSDate(line);
-        if (line.startsWith('DTEND'))               current.end   = parseICSDate(line);
-        if (line.startsWith('DTSTART;VALUE=DATE:')) current.start = parseICSDateOnly(line.slice(19));
-        if (line.startsWith('DTEND;VALUE=DATE:'))   current.end   = parseICSDateOnly(line.slice(17));
-      });
-      return events;
-    }
+	  var events = [], lines = text.replace(/\r\n /g,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+	  var current = null;
+	  lines.forEach(function(line) {
+		if (line === 'BEGIN:VEVENT') { current = {}; return; }
+		if (line === 'END:VEVENT') {
+		  if (current && current.start && current.end && current.title) events.push(current);
+		  current = null; return;
+		}
+		if (!current) return;
+		if (line.startsWith('SUMMARY:')) current.title = line.slice(8).trim();
+
+		// Primero los casos específicos (VALUE=DATE), luego los generales
+		if (line.startsWith('DTSTART;VALUE=DATE:')) {
+		  current.start = parseICSDateOnly(line.slice(19));
+		} else if (line.startsWith('DTSTART')) {
+		  current.start = parseICSDate(line);
+		}
+
+		if (line.startsWith('DTEND;VALUE=DATE:')) {
+		  // DTEND en all-day events es EXCLUSIVO según RFC 5545: restamos 1 día
+		  current.end = subtractOneDay(parseICSDateOnly(line.slice(17)));
+		} else if (line.startsWith('DTEND')) {
+		  current.end = parseICSDate(line);
+		}
+	  });
+	  return events;
+	}
+
+	function subtractOneDay(isoDate) {
+	  if (!isoDate) return null;
+	  var d = new Date(isoDate + 'T00:00:00');
+	  d.setDate(d.getDate() - 1);
+	  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+	}
     function parseICSDate(line) {
       var val = line.includes(':') ? line.split(':').slice(1).join(':') : '';
       if (!val) return null;
