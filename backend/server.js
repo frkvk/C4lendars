@@ -7,16 +7,20 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
 const {
-  DB_HOST = 'localhost',
-  DB_PORT = '3306',
-  DB_USER = 'root',
-  DB_PASS = '',
-  DB_NAME = 'guardias_db',
+  DB_HOST = 'localhost',    // sobreescrito por Docker
+  DB_PORT = '3306',         // sobreescrito por Docker
+  DB_USER = 'root',         // sobreescrito por Docker
+  DB_PASS = '',             // sobreescrito por Docker
+  DB_NAME = 'guardias_db',  // sobreescrito por Docker
   JWT_SECRET = 'cambia-esto-en-produccion',
   PORT = 4000,
 } = process.env;
 
 let pool;
+
+const loginAttempts = new Map();
+const MAX_ATTEMPTS = 5;
+const BLOCK_MS = 5 * 60 * 1000;
 
 async function initDb() {
   pool = mysql.createPool({
@@ -96,7 +100,7 @@ function signToken(user) {
   return jwt.sign(
     { id: user.id, username: user.username, role: user.role },
     JWT_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: '24h' }
   );
 }
 
@@ -306,22 +310,43 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *       401:
  *         description: Credenciales inválidas
  */
+
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password) return res.status(400).json({ error: 'Faltan credenciales' });
+
+  // --- Límite de intentos (antes de tocar la BD) ---
+  const now = Date.now();
+  const attempt = loginAttempts.get(username) || { count: 0, blockedUntil: 0 };
+  if (attempt.blockedUntil > now) {
+    const secsLeft = Math.ceil((attempt.blockedUntil - now) / 1000);
+    return res.status(429).json({ error: 'Demasiados intentos. Espera ' + secsLeft + ' segundos.' });
+  }
+
   try {
     const [rows] = await pool.query(`SELECT * FROM users WHERE username = ?`, [username]);
-    if (!rows.length) return res.status(401).json({ error: 'Credenciales inválidas' });
+
+    // Tanto si no existe el usuario como si la contraseña es incorrecta, suma intento
     const user = rows[0];
-    const ok = await bcrypt.compare(password, user.pass_hash);
-    if (!ok) return res.status(401).json({ error: 'Credenciales inválidas' });
+    const ok = user ? await bcrypt.compare(password, user.pass_hash) : false;
+
+    if (!ok) {
+      attempt.count++;
+      if (attempt.count >= MAX_ATTEMPTS) {
+        attempt.blockedUntil = now + BLOCK_MS;
+        attempt.count = 0;
+      }
+      loginAttempts.set(username, attempt);
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+
+    loginAttempts.delete(username);
     res.json({ token: signToken(user), user: { id: user.id, username: user.username, role: user.role } });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'DB error' });
   }
 });
-
 /**
  * @swagger
  * /auth/me:
@@ -660,6 +685,83 @@ app.delete('/api/calendars/:id', authMiddleware, requireRole('admin'), async (re
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'DB error' });
+  }
+});
+
+/**
+ * @swagger
+ * /calendars/{id}/duplicate:
+ *   post:
+ *     tags: [Calendars]
+ *     summary: Duplicar un calendario existente (solo admin)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *         description: ID del calendario a duplicar
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nombre para la copia (opcional, por defecto añade " (copia)")
+ *                 example: Guardias 2026 (copia)
+ *     responses:
+ *       201:
+ *         description: Calendario duplicado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id: { type: integer }
+ *                 slug: { type: string }
+ *                 name: { type: string }
+ *       404:
+ *         description: Calendario original no encontrado
+ *       403:
+ *         description: Prohibido
+ */
+app.post('/api/calendars/:id/duplicate', authMiddleware, requireRole('admin'), async (req, res) => {
+  const calendarId = Number(req.params.id);
+  const { name, start_year, years_span } = req.body || {};
+  try {
+    const [rows] = await pool.query(`SELECT * FROM calendars WHERE id = ?`, [calendarId]);
+    if (!rows.length) return res.status(404).json({ error: 'Calendario no encontrado' });
+    const cal = rows[0];
+	const newName = name && name.trim() ? name.trim() : cal.name + ' (copia)';
+    const newSlug = generateRandomSlug();
+    const finalStartYear = start_year ? Number(start_year) : cal.start_year;
+    const finalYearsSpan = years_span ? Number(years_span) : cal.years_span;
+    const [result] = await pool.query(
+      `INSERT INTO calendars (name, slug, template_type, start_year, years_span, week_start_js, region_code, theme_json, owner_id)
+       VALUES (?,?,?,?,?,?,?,?,?)`,
+      [newName, newSlug, cal.template_type, finalStartYear, finalYearsSpan, cal.week_start_js, cal.region_code, cal.theme_json, req.user.id]
+    );
+        // Copiar datos de años
+    const [dataRows] = await pool.query(`SELECT year, data_json FROM calendar_data WHERE calendar_id = ?`, [calendarId]);
+    for (const d of dataRows) {
+      await pool.query(
+        `INSERT INTO calendar_data (calendar_id, year, data_json) VALUES (?,?,?)`,
+        [result.insertId, d.year, d.data_json]
+      );
+    }
+    // Copiar permisos
+    const [assignRows] = await pool.query(`SELECT user_id, can_edit FROM calendar_assignments WHERE calendar_id = ?`, [calendarId]);
+    for (const a of assignRows) {
+      await pool.query(
+        `INSERT INTO calendar_assignments (calendar_id, user_id, can_edit) VALUES (?,?,?)`,
+        [result.insertId, a.user_id, a.can_edit]
+      );
+    }
+    res.status(201).json({ id: result.insertId, slug: newSlug, name: newName });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Error duplicando calendario' });
   }
 });
 
