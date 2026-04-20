@@ -175,8 +175,9 @@
     .monthly-grid-wrap { border-radius: var(--r-xl); overflow:hidden; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-outline-variant); width:100%; }
     .monthly-dow { display:grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-bottom: 1px solid var(--md-sys-color-outline-variant); }
     .monthly-dow div { padding: 8px 4px; text-align:center; font-weight:700; font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); overflow:hidden; }
-    .monthly-days { display:grid; grid-template-columns: repeat(7, minmax(0, 1fr)); width:100%; }
-    .mday { min-height: 90px; padding: 6px 4px; border-right: 1px solid var(--md-sys-color-outline-variant); border-bottom: 1px solid var(--md-sys-color-outline-variant); display:flex; flex-direction:column; gap:3px; cursor:pointer; transition: .15s ease; position:relative; background: var(--md-sys-color-surface); overflow:hidden; min-width:0; }
+    .monthly-weeks { display:grid; width:100%; }
+    .monthly-week-row { display:grid; grid-template-columns: repeat(7, minmax(0, 1fr)); position:relative; }
+    .mday { min-height: 110px; padding: 6px 4px 4px; border-right: 1px solid var(--md-sys-color-outline-variant); border-bottom: 1px solid var(--md-sys-color-outline-variant); display:flex; flex-direction:column; gap:3px; cursor:pointer; transition: .15s ease; position:relative; background: var(--md-sys-color-surface); min-width:0; }
     .mday:hover { background: var(--md-sys-color-surface-container-high); }
     .mday.empty { background: var(--md-sys-color-surface-container); opacity:.5; cursor:default; }
     .mday.weekend .mday-num { color: var(--md-sys-color-weekend); }
@@ -185,9 +186,30 @@
     .mday.selected-week { outline: 3px solid color-mix(in srgb, var(--md-sys-color-primary) 45%, transparent); outline-offset:-3px; }
     .mday-num { font-size: 0.9rem; font-weight:700; flex-shrink:0; }
     .mday-num.today { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); width:24px; height:24px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:0.8rem; }
-    .mday-guard { font-size:0.7rem; padding:1px 5px; border-radius:999px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
-    .mday-event { font-size:0.7rem; padding:1px 5px; border-radius:999px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:white; max-width:100%; }
-    /* ── Modal ── */
+    .mday-guard { font-size:0.7rem; padding:1px 5px; border-radius:999px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; margin-top:2px; }
+    .mday-spacer { height: 18px; flex-shrink:0; pointer-events:none; }
+    .week-events-layer { position:absolute; top:0; left:0; width:100%; pointer-events:none; z-index:2; }
+    .mday-event-span {
+      position:absolute; height:18px; border-radius:999px; font-size:0.7rem; font-weight:600;
+      color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      display:flex; align-items:center; padding:0 6px; cursor:pointer;
+      pointer-events:all; transition:.15s ease; box-sizing:border-box;
+    }
+    .mday-event-span:hover { filter:brightness(1.15); transform:scaleY(1.08); box-shadow:0 2px 8px rgba(0,0,0,.25); z-index:10; }
+    .mday-event-span.starts-here   { border-radius:999px 4px 4px 999px; }
+    .mday-event-span.ends-here     { border-radius:4px 999px 999px 4px; }
+    .mday-event-span.starts-and-ends { border-radius:999px; }
+    .mday-event-span.continues     { border-radius:4px; }
+    .mv-tooltip {
+      position:fixed; z-index:9999; background:var(--md-sys-color-surface-container-highest);
+      border:1px solid var(--md-sys-color-outline-variant); border-radius:var(--r-md);
+      padding:10px 14px; box-shadow:var(--shadow-2); max-width:260px; pointer-events:none;
+      font-size:0.82rem; line-height:1.6; color:var(--md-sys-color-on-surface);
+      opacity:0; transition:opacity .12s ease;
+    }
+    .mv-tooltip.visible { opacity:1; }
+    .mv-tooltip strong { display:block; margin-bottom:2px; font-size:0.88rem; }
+	/* ── Modal ── */
     .modal-backdrop { display:none; position:fixed; inset:0; z-index:100; background: rgba(0,0,0,.45); backdrop-filter: blur(4px); align-items:center; justify-content:center; }
     .modal-backdrop.open { display:flex; }
     .modal { background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-outline-variant); border-radius: var(--r-xl); padding: 28px; width: min(520px, calc(100vw - 32px)); box-shadow: var(--shadow-2); display:grid; gap:14px; }
@@ -332,7 +354,7 @@
           </div>
           <div class="monthly-grid-wrap">
             <div class="monthly-dow" id="monthlyDow"></div>
-            <div class="monthly-days" id="monthlyDays"></div>
+            <div class="monthly-weeks" id="monthlyWeeks"></div>
           </div>
         </div>
       </section>
@@ -369,7 +391,7 @@
     </div>
   </div>
 
-  <!-- Modal iCal -->
+	<!-- Modal iCal -->
   <div class="modal-backdrop" id="icalModal">
     <div class="modal">
       <h2 id="icalModalTitle">Añadir calendario iCal</h2>
@@ -379,7 +401,12 @@
       </div>
       <div class="modal-field">
         <label for="icalUrl">URL del calendario (.ics)</label>
-        <input id="icalUrl" type="url" placeholder="https://.../.ics">
+        <input id="icalUrl" type="url" placeholder="https://ejemplo.com/calendario.ics">
+      </div>
+      <div class="modal-field">
+        <label for="icalPersonName">Nombre de persona (opcional)</label>
+        <input id="icalPersonName" type="text" placeholder="Ej: Cesar">
+        <span style="font-size:0.75rem;color:var(--md-sys-color-on-surface-variant);">Se usa como título cuando el evento no trae nombre (SUMMARY vacío).</span>
       </div>
       <div class="modal-field">
         <label for="icalColor">Color de los eventos</label>
@@ -466,35 +493,45 @@
     }
 
     // ── iCal parser ───────────────────────────────────────────────
-    function parseICS(text) {
-	  var events = [], lines = text.replace(/\r\n /g,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
-	  var current = null;
-	  lines.forEach(function(line) {
-		if (line === 'BEGIN:VEVENT') { current = {}; return; }
-		if (line === 'END:VEVENT') {
-		  if (current && current.start && current.end && current.title) events.push(current);
-		  current = null; return;
-		}
-		if (!current) return;
-		if (line.startsWith('SUMMARY:')) current.title = line.slice(8).trim();
+    function parseICS(text, personName) {
+      var events = [], lines = text.replace(/\r\n /g,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+      var current = null;
+      lines.forEach(function(line) {
+        if (line === 'BEGIN:VEVENT') { current = {}; return; }
+        if (line === 'END:VEVENT') {
+          if (current && current.start && current.end) {
+            if (!current.title || current.title.trim() === '') {
+              // Sin título: usar personName o fallback
+              current.title = personName || '(Sin título)';
+            } else if (personName && personName.trim()) {
+              // Tiene título pero NO contiene el nombre de la persona → añadirlo como prefijo
+              var lowerTitle = current.title.toLowerCase();
+              var lowerPerson = personName.toLowerCase();
+              if (lowerTitle.indexOf(lowerPerson) === -1) {
+                current.title = personName + ': ' + current.title;
+              }
+            }
+            events.push(current);
+          }
+          current = null; return;
+        }
+        if (!current) return;
+        if (line.startsWith('SUMMARY:')) current.title = line.slice(8).trim();
 
-		// Primero los casos específicos (VALUE=DATE), luego los generales
-		if (line.startsWith('DTSTART;VALUE=DATE:')) {
-		  current.start = parseICSDateOnly(line.slice(19));
-		} else if (line.startsWith('DTSTART')) {
-		  current.start = parseICSDate(line);
-		}
+        if (line.startsWith('DTSTART;VALUE=DATE:')) {
+          current.start = parseICSDateOnly(line.slice(19));
+        } else if (line.startsWith('DTSTART')) {
+          current.start = parseICSDate(line);
+        }
 
-		if (line.startsWith('DTEND;VALUE=DATE:')) {
-		  // DTEND en all-day events es EXCLUSIVO según RFC 5545: restamos 1 día
-		  current.end = subtractOneDay(parseICSDateOnly(line.slice(17)));
-		} else if (line.startsWith('DTEND')) {
-		  current.end = parseICSDate(line);
-		}
-	  });
-	  return events;
-	}
-
+        if (line.startsWith('DTEND;VALUE=DATE:')) {
+          current.end = subtractOneDay(parseICSDateOnly(line.slice(17)));
+        } else if (line.startsWith('DTEND')) {
+          current.end = parseICSDate(line);
+        }
+      });
+      return events;
+    }
 	function subtractOneDay(isoDate) {
 	  if (!isoDate) return null;
 	  var d = new Date(isoDate + 'T00:00:00');
@@ -520,7 +557,7 @@
         var res = await fetch('/api/ical/fetch?url='+encodeURIComponent(feed.url), {headers:headers});
         if (!res.ok) throw new Error('HTTP ' + res.status);
         var text = await res.text();
-        feed.events = parseICS(text);
+        feed.events = parseICS(text, feed.personName||'');
         feed.status = 'ok';
         feed.lastSync = toISODate(new Date());
       } catch(e) {
@@ -577,6 +614,7 @@
       document.getElementById('icalName').value  = feed ? feed.name  : '';
       document.getElementById('icalUrl').value   = feed ? feed.url   : '';
       document.getElementById('icalColor').value = feed ? feed.color : '#0277bd';
+	  document.getElementById('icalPersonName').value = feed ? (feed.personName||'') : '';
       document.getElementById('icalDelete').style.display = feed ? '' : 'none';
       document.getElementById('icalModal').classList.add('open');
       document.getElementById('icalName').focus();
@@ -596,17 +634,18 @@
       var name  = document.getElementById('icalName').value.trim();
       var url   = document.getElementById('icalUrl').value.trim();
       var color = document.getElementById('icalColor').value;
+	  var personName = document.getElementById('icalPersonName').value.trim();
       if (!name) { alert('El nombre es obligatorio.'); return; }
       if (!url)  { alert('La URL es obligatoria.'); return; }
       if (_editingIcalId) {
         state.icalFeeds = state.icalFeeds.map(function(f){
-          return f.id===_editingIcalId ? Object.assign({},f,{name:name,url:url,color:color}) : f;
+          return f.id===_editingIcalId ? Object.assign({},f,{name:name,url:url,color:color,personName:personName}) : f;
         });
         closeIcalModal();
         var feed = state.icalFeeds.find(function(f){ return f.id===_editingIcalId; });
         if (feed) syncIcalFeed(feed);
       } else {
-        var newFeed = { id:'ical-'+Date.now(), name:name, url:url, color:color, status:'loading', events:[] };
+        var newFeed = { id:'ical-'+Date.now(), name:name, url:url, color:color, personName:personName, status:'loading', events:[] };
         state.icalFeeds.push(newFeed);
         closeIcalModal();
         syncIcalFeed(newFeed);
@@ -958,55 +997,193 @@
       document.getElementById('monthNavTitle').textContent=monthNames[m]+' '+state.year;
       var dowEl=document.getElementById('monthlyDow'); dowEl.innerHTML='';
       dayNames.forEach(function(d){var div=document.createElement('div');div.textContent=d;dowEl.appendChild(div);});
-      var daysEl=document.getElementById('monthlyDays'); daysEl.innerHTML='';
+
+      var weeksEl=document.getElementById('monthlyWeeks'); weeksEl.innerHTML='';
       var first=new Date(state.year,m,1),last=new Date(state.year,m+1,0);
       var offset=(first.getDay()+6)%7,total=Math.ceil((offset+last.getDate())/7)*7;
       var todayISO=isoToday();
-      for(var i=0;i<total;i++){
-        var dn=i-offset+1;
-        var cell=document.createElement('div');
-        if(dn<1||dn>last.getDate()){cell.className='mday empty';daysEl.appendChild(cell);continue;}
-        var date=new Date(state.year,m,dn),iso=toISODate(date);
-        var holiday=state.holidayMap[iso]||null;
-        var isWe=date.getDay()===0||date.getDay()===6;
-        var week=getWeekForDate(date);
-        var evs=allEventsForDate(iso);
-        cell.className='mday'+(isWe?' weekend':'')+(holiday?' holiday':'')+(week&&week.id===state.selectedWeekId?' selected-week':'');
-        var numDiv=document.createElement('div');
-        numDiv.className='mday-num'+(iso===todayISO?' today':'');
-        numDiv.textContent=dn; cell.appendChild(numDiv);
-        if(holiday){
-          var hDiv=document.createElement('div');
-          hDiv.style.cssText='font-size:0.72rem;color:var(--md-sys-color-holiday);font-weight:600;';
-          hDiv.textContent='🗓 '+holiday; cell.appendChild(hDiv);
-        }
-        if(week&&week.first){
-          var p1=getPersonByName(week.first);
-          var g1=document.createElement('div'); g1.className='mday-guard';
-          g1.style.cssText='background:'+(p1?p1.color+'22':'#eee')+';color:'+(p1?p1.color:'#333')+';';
-          g1.textContent='1ª '+week.first; cell.appendChild(g1);
-        }
-        if(week&&week.second){
-          var p2=getPersonByName(week.second);
-          var g2=document.createElement('div'); g2.className='mday-guard';
-          g2.style.cssText='background:'+(p2?p2.color+'22':'#eee')+';color:'+(p2?p2.color:'#333')+';';
-          g2.textContent='2ª '+week.second; cell.appendChild(g2);
-        }
-        evs.forEach(function(ev){
-          var evDiv=document.createElement('div'); evDiv.className='mday-event';
-          evDiv.style.background=ev.color; evDiv.textContent='📌 '+ev.title; cell.appendChild(evDiv);
+      var numWeeks=total/7;
+
+      var tooltip=document.getElementById('mvTooltip');
+      if(!tooltip){tooltip=document.createElement('div');tooltip.id='mvTooltip';tooltip.className='mv-tooltip';document.body.appendChild(tooltip);}
+      function showTooltip(e,html){tooltip.innerHTML=html;tooltip.classList.add('visible');positionTooltip(e);}
+      function positionTooltip(e){var x=e.clientX+14,y=e.clientY-10;if(x+270>window.innerWidth)x=e.clientX-280;if(y+120>window.innerHeight)y=e.clientY-130;tooltip.style.left=x+'px';tooltip.style.top=y+'px';}
+      function hideTooltip(){tooltip.classList.remove('visible');}
+
+      function getMonthEvents(){
+        var monthStart=toISODate(new Date(state.year,m,1));
+        var monthEnd=toISODate(new Date(state.year,m+1,0));
+        var all=[];
+        state.events.forEach(function(ev){
+          if(ev.end>=monthStart&&ev.start<=monthEnd)
+            all.push({id:ev.id,title:ev.title,start:ev.start,end:ev.end,color:ev.color,isOwn:true});
         });
-        (function(w,c){
-          c.addEventListener('click',function(){
-			  if(!w) return;
-			  state.selectedWeekId=w.id;renderAll();focusSelectedWeek(true);
-			});
-        })(week,cell);
-        daysEl.appendChild(cell);
+        state.icalFeeds.forEach(function(feed){
+          if(feed.status==='ok'&&Array.isArray(feed.events)){
+            feed.events.forEach(function(ev){
+              if(ev.end>=monthStart&&ev.start<=monthEnd)
+                all.push({id:null,title:ev.title,start:ev.start,end:ev.end,color:feed.color,isOwn:false});
+            });
+          }
+        });
+        all.sort(function(a,b){return (new Date(b.end)-new Date(b.start))-(new Date(a.end)-new Date(a.start));});
+        return all;
+      }
+      var allMonthEvents=getMonthEvents();
+
+      function buildWeekLanes(weekIndex){
+        var wStart=weekIndex*7-offset+1;
+        var lanes=[],evLanes=[];
+        allMonthEvents.forEach(function(ev){
+          var evStartDate=new Date(ev.start+'T00:00:00');
+          var evEndDate=new Date(ev.end+'T00:00:00');
+          var firstDayOfMonth=new Date(state.year,m,1);
+          var lastDayOfMonth=new Date(state.year,m+1,0);
+          var clampedStart=evStartDate<firstDayOfMonth?firstDayOfMonth:evStartDate;
+          var clampedEnd=evEndDate>lastDayOfMonth?lastDayOfMonth:evEndDate;
+          var startDn=clampedStart.getDate();
+          var endDn=clampedEnd.getDate();
+          var weekEndDn=wStart+6;
+          if(endDn<wStart||startDn>weekEndDn) return;
+          var visStart=Math.max(startDn,wStart);
+          var visEnd=Math.min(endDn,weekEndDn);
+          var lane=0;
+          while(true){
+            if(!lanes[lane]){lanes[lane]=[];break;}
+            var conflict=lanes[lane].some(function(p){return !(p.visEnd<visStart||p.visStart>visEnd);});
+            if(!conflict) break;
+            lane++;
+          }
+          if(!lanes[lane]) lanes[lane]=[];
+          var entry={ev:ev,visStart:visStart,visEnd:visEnd,lane:lane,
+            startsInWeek:startDn>=wStart,endsInWeek:endDn<=weekEndDn};
+          lanes[lane].push(entry);
+          evLanes.push(entry);
+        });
+        return evLanes;
+      }
+
+      for(var wk=0;wk<numWeeks;wk++){
+        var weekRow=document.createElement('div');
+        weekRow.className='monthly-week-row';
+        var evLanes=buildWeekLanes(wk);
+        var maxLane=evLanes.length?Math.max.apply(null,evLanes.map(function(e){return e.lane;})):-1;
+        var laneCount=maxLane+1;
+        var LANE_H=20, TOP_OFFSET=72;
+        var cellExtraH=laneCount*LANE_H;
+
+        for(var col=0;col<7;col++){
+          var i=wk*7+col;
+          var dn=i-offset+1;
+          var cell=document.createElement('div');
+          if(dn<1||dn>last.getDate()){
+            cell.className='mday empty';
+            cell.style.minHeight=(90+cellExtraH)+'px';
+            weekRow.appendChild(cell); continue;
+          }
+          var date=new Date(state.year,m,dn),iso=toISODate(date);
+          var holiday=state.holidayMap[iso]||null;
+          var isWe=date.getDay()===0||date.getDay()===6;
+          var week=getWeekForDate(date);
+          cell.className='mday'+(isWe?' weekend':'')+(holiday?' holiday':'')+(week&&week.id===state.selectedWeekId?' selected-week':'');
+          cell.style.minHeight=(90+cellExtraH)+'px';
+
+          var numRow=document.createElement('div');
+		  numRow.style.cssText='display:flex;align-items:center;gap:4px;flex-wrap:nowrap;min-width:0;';
+		  var numDiv=document.createElement('div');
+		  numDiv.className='mday-num'+(iso===todayISO?' today':'');
+		  numDiv.textContent=dn;
+		  numRow.appendChild(numDiv);
+		  if(holiday){
+		    var hSpan=document.createElement('span');
+		    hSpan.style.cssText='font-size:0.65rem;color:var(--md-sys-color-holiday);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;';
+		    hSpan.textContent='🗓 '+holiday;
+		    numRow.appendChild(hSpan);
+		  }
+		  cell.appendChild(numRow);
+          if(week&&week.first){
+            var p1=getPersonByName(week.first);
+            var g1=document.createElement('div'); g1.className='mday-guard';
+            g1.style.cssText='background:'+(p1?p1.color+'22':'#eee')+';color:'+(p1?p1.color:'#333')+';';
+            g1.textContent='1ª '+week.first; cell.appendChild(g1);
+          }
+          if(week&&week.second){
+            var p2=getPersonByName(week.second);
+            var g2=document.createElement('div'); g2.className='mday-guard';
+            g2.style.cssText='background:'+(p2?p2.color+'22':'#eee')+';color:'+(p2?p2.color:'#333')+';';
+            g2.textContent='2ª '+week.second; cell.appendChild(g2);
+          }
+          if(laneCount>0){
+            var sp=document.createElement('div');
+            sp.className='mday-spacer';
+            sp.style.height=cellExtraH+'px';
+            cell.appendChild(sp);
+          }
+
+          (function(d,h,wk2){
+            cell.addEventListener('mouseenter',function(e){
+              var lines=['<strong>'+d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})+'</strong>'];
+              if(h) lines.push('🗓 Festivo: '+h);
+              if(wk2){lines.push('1ª guardia: '+(wk2.first||'Sin asignar'));lines.push('2ª guardia: '+(wk2.second||'Sin asignar'));}
+              showTooltip(e,lines.join('<br>'));
+            });
+            cell.addEventListener('mousemove',function(e){positionTooltip(e);});
+            cell.addEventListener('mouseleave',hideTooltip);
+          })(date,holiday,week);
+
+          (function(w,c){
+            c.addEventListener('click',function(e){
+              if(e.target.closest('.mday-event-span')) return;
+              if(!w) return;
+              state.selectedWeekId=w.id; renderAll(); focusSelectedWeek(true);
+            });
+          })(week,cell);
+
+          weekRow.appendChild(cell);
+        }
+
+        if(evLanes.length){
+          var layer=document.createElement('div');
+          layer.className='week-events-layer';
+          var wStart2=wk*7-offset+1;
+          evLanes.forEach(function(entry){
+            var ev=entry.ev;
+            var colStart=entry.visStart-wStart2;
+            var colEnd=entry.visEnd-wStart2;
+            var leftPct=(colStart/7)*100;
+            var widthPct=((colEnd-colStart+1)/7)*100;
+            var topPx=TOP_OFFSET+entry.lane*LANE_H;
+            var span=document.createElement('div');
+            span.className='mday-event-span';
+            if(entry.startsInWeek&&entry.endsInWeek) span.classList.add('starts-and-ends');
+            else if(entry.startsInWeek) span.classList.add('starts-here');
+            else if(entry.endsInWeek)  span.classList.add('ends-here');
+            else span.classList.add('continues');
+            span.style.cssText='left:calc('+leftPct+'% + 2px);width:calc('+widthPct+'% - 4px);top:'+topPx+'px;background:'+ev.color+';';
+            span.textContent=(entry.startsInWeek?'📌 ':'')+ev.title;
+            span.addEventListener('mouseenter',function(e){
+              e.stopPropagation();
+              var lines=['<strong>'+ev.title+'</strong>'];
+              lines.push('📅 '+(ev.start===ev.end?isoToES(ev.start):isoToES(ev.start)+' → '+isoToES(ev.end)));
+              showTooltip(e,lines.join('<br>'));
+            });
+            span.addEventListener('mousemove',function(e){e.stopPropagation();positionTooltip(e);});
+            span.addEventListener('mouseleave',function(e){e.stopPropagation();hideTooltip();});
+            if(ev.isOwn&&ev.id&&state.canEdit){
+              span.addEventListener('click',function(e){
+                e.stopPropagation();
+                var found=state.events.find(function(x){return x.id===ev.id;});
+                if(found) openEventModal(found);
+              });
+            }
+            layer.appendChild(span);
+          });
+          weekRow.appendChild(layer);
+        }
+        weeksEl.appendChild(weekRow);
       }
     }
-
-    // ── Vista toggle ──────────────────────────────────────────────
+	// ── Vista toggle ──────────────────────────────────────────────
     function setView(v){
       state.view=v;
       document.getElementById('yearView').style.display=v==='year'?'':'none';
