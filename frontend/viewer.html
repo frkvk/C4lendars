@@ -68,14 +68,33 @@
     button, select, input, textarea { font: inherit; color: inherit; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     .shell { width: min(100%, calc(100vw - 24px)); margin: 0 auto; padding: 12px; display: grid; gap: 12px; }
+    .status {
+      padding: 14px 12px;
+      margin-left: 15px; margin-right: 15px;
+      border-radius: var(--r-md);
+      background: var(--md-sys-color-surface-container-high);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface-variant);
+      margin-bottom: 8px;
+    }
+
+    .status.error { color: var(--md-sys-color-error); border-color: color-mix(in srgb, var(--md-sys-color-error) 45%, var(--md-sys-color-outline-variant)); }
     .topbar, .surface, .month, .stat-card, .week-row, .legend-chip {
       background: var(--md-sys-color-surface-container);
       border: 1px solid var(--md-sys-color-outline-variant);
       box-shadow: var(--shadow-1);
     }
     .topbar {
-      display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
-      padding: 20px 24px; border-radius: var(--r-xl); position: sticky; top: 8px; z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 20px 12px;
+      border-radius: var(--r-xl);
+      position: sticky;
+      top: 8px;
+      z-index: 20;
       backdrop-filter: blur(14px);
     }
     .brand { display:flex; align-items:center; gap:16px; }
@@ -95,9 +114,12 @@
     .btn.active-view { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); border-color: var(--md-sys-color-primary); }
     .btn.danger { background: var(--md-sys-color-error); color: #fff; border-color: transparent; }
     .file-input { display:none; }
-    .status { padding: 14px 18px; border-radius: var(--r-md); background: var(--md-sys-color-surface-container-high); border: 1px solid var(--md-sys-color-outline-variant); color: var(--md-sys-color-on-surface-variant); }
-    .status.error { color: var(--md-sys-color-error); border-color: color-mix(in srgb, var(--md-sys-color-error) 45%, var(--md-sys-color-outline-variant)); }
-    .layout { display:grid; grid-template-columns: 400px minmax(0, 1fr); gap: 12px; align-items:start; }
+    .layout {
+      display: grid;margin-left: 15px; margin-right: 15px;
+      grid-template-columns: 400px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
     .sidebar, .content { display:grid; gap:12px; }
     .surface { border-radius: var(--r-lg); overflow:hidden; }
     .surface-header { padding: 18px 20px; border-bottom: 1px solid var(--md-sys-color-outline-variant); display:flex; justify-content:space-between; gap:12px; align-items: center; }
@@ -237,6 +259,23 @@
   </style>
 </head>
 <body>
+	<div id="icalExportModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.4); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+  <div style="background:var(--md-sys-color-surface-container); border:1px solid var(--md-sys-color-outline-variant); border-radius:24px; padding:24px; width:min(420px, calc(100vw - 32px)); box-shadow:var(--shadow-2); display:grid; gap:16px;">
+    <h2 style="font-size:1.1rem; font-weight:700;">📤 Exportar iCal</h2>
+
+    <div style="display:grid; gap:6px;">
+      <label style="font-size:0.85rem; color:var(--md-sys-color-on-surface-variant);">Filtrar por persona</label>
+      <select id="icalPersonSelect" style="min-height:36px; border-radius:12px; border:1px solid var(--md-sys-color-outline-variant); background:var(--md-sys-color-surface); padding:0 10px; font-size:0.95rem;"></select>
+    </div>
+
+    <div style="display:grid; gap:8px;">
+      <button class="btn primary" id="icalDownloadBtn">⬇️ Descargar .ics</button>
+      <button class="btn" id="icalCopyUrlBtn">🔗 Copiar URL de suscripción</button>
+    </div>
+
+    <button class="btn" id="icalModalCloseBtn" style="margin-top:-4px;">Cancelar</button>
+  </div>
+</div>
   <a href="#contenido" class="sr-only">Saltar al contenido</a>
   <div class="shell">
     <header class="topbar">
@@ -255,14 +294,26 @@
       </div>
       <div class="toolbar">
         <button class="btn" id="themeToggle" type="button">🌙</button>
+		    <button class="btn" id="icalExportBtn">📤 Exportar iCal</button>
         <div style="display:flex;gap:4px;border:1px solid var(--md-sys-color-outline-variant);border-radius:999px;padding:4px;">
-          <button class="btn active-view" id="btnViewYear"  type="button" style="min-height:36px;padding:0 14px;">📅 Anual</button>
-          <button class="btn"             id="btnViewMonth" type="button" style="min-height:36px;padding:0 14px;">🗓 Mensual</button>
+          <button class="btn active-view" id="btnViewYear" type="button" style="min-height:36px;padding:0 14px;">📅 Anual</button>
+          <button class="btn" id="btnViewMonth" type="button" style="min-height:36px;padding:0 14px;">🗓 Mensual</button>
         </div>
-        <label class="file-label" for="importJson">Importar JSON</label>
-        <input class="file-input" id="importJson" type="file" accept="application/json,.json">
-        <button class="btn" id="exportJson" type="button">Exportar JSON</button>
-        <button class="btn primary" id="saveServer" type="button">Guardar en servidor</button>
+
+        <div style="display:flex;align-items:center;gap:4px;border:1px solid var(--md-sys-color-outline-variant);border-radius:999px;padding:4px;">
+          <button class="btn" id="btnYearPrev" type="button" style="min-height:36px;padding:0 12px;" title="Año anterior">←</button>
+          <span id="yearNavLabel" style="min-height:36px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;min-width:64px;">
+            2026
+          </span>
+          <button class="btn" id="btnYearNext" type="button" style="min-height:36px;padding:0 12px;" title="Año siguiente">→</button>
+        </div>
+        </div>
+        <div style="display:flex;gap:4px;border:1px solid var(--md-sys-color-outline-variant);border-radius:999px;padding:4px;">
+          <label class="file-label" for="importJson" style="min-height:36px;padding:0 14px;border:none;background:transparent;">Importar JSON</label>
+          <input class="file-input" id="importJson" type="file" accept="application/json,.json">
+          <button class="btn" id="exportJson" type="button" style="min-height:36px;padding:0 14px;border:none;background:transparent;">Exportar JSON</button>
+          <button class="btn primary" id="saveServer" type="button" style="min-height:36px;padding:0 14px;">Guardar en servidor</button>
+        </div>
       </div>
     </header>
 
@@ -578,8 +629,10 @@
         feed.events = parseICS(text, feed.personName||'');
         feed.status = 'ok';
         feed.lastSync = toISODate(new Date());
+        setStatus('Sincronizado "' + feed.name + '": ' + feed.events.length + ' eventos.', 'ok');
       } catch(e) {
         feed.status = 'error'; feed.error = e.message; feed.events = [];
+        setStatus('Error sincronizando "' + feed.name + '": ' + e.message, 'error');
       }
       renderIcalList(); renderCalendar();
       if (state.view==='month') renderMonthView();
@@ -717,8 +770,8 @@
     }
     function normalizeIcalFeeds(raw) {
 	  if (!Array.isArray(raw)) return [];
-	  return raw.map(function(f) {
-		return { id: f.id||'ical-'+Date.now(), name: f.name||'Sin nombre', url: f.url,
+	  return raw.map(function(f, i) {
+    return { id: f.id || ('ical-' + Date.now() + '-' + i), name: f.name||'Sin nombre', url: f.url,
 				 color: f.color||'#0277bd', personName: f.personName||'', status: 'loading', events: [] };
 	  });
 	}
@@ -785,7 +838,7 @@
             'min-height:46px;border-radius:16px;border:1px solid var(--md-sys-color-outline);' +
             'background:' + person.color + ';cursor:pointer;transition:.2s;' +
           '" title="Cambiar color"></button>' +
-          '<button class="icon-btn" type="button">✕</button>';
+          '<button class="icon-btn" type="button" aria-label="Eliminar persona" title="Eliminar">🗑</button>';
 
         var ni = row.querySelector('.person-edit');
         var cb = row.querySelector('.color-btn');
@@ -1276,8 +1329,41 @@
     }
     document.getElementById('btnViewYear').addEventListener('click',function(){setView('year');});
     document.getElementById('btnViewMonth').addEventListener('click',function(){setView('month');});
-    document.getElementById('monthPrev').addEventListener('click',function(){state.currentMonth=(state.currentMonth+11)%12;renderMonthView();});
-    document.getElementById('monthNext').addEventListener('click',function(){state.currentMonth=(state.currentMonth+1)%12;renderMonthView();});
+    document.getElementById('monthPrev').addEventListener('click', function() {
+      if (state.currentMonth === 0) {
+        goToYear(state.year - 1);
+      } else {
+        state.currentMonth--;
+        renderMonthView();
+      }
+    });
+    document.getElementById('monthNext').addEventListener('click', function() {
+      if (state.currentMonth === 11) {
+        goToYear(state.year + 1);
+      } else {
+        state.currentMonth++;
+        renderMonthView();
+      }
+    });
+
+    function updateYearNav() {
+      var label = document.getElementById('yearNavLabel');
+      if (label) label.textContent = String(state.year);
+    }
+
+    function goToYear(targetYear) {
+      var url = new URL(window.location.href);
+      url.searchParams.set('year', String(targetYear));
+      window.location.href = url.toString();
+    }
+
+    document.getElementById('btnYearPrev').addEventListener('click', function() {
+      goToYear(state.year - 1);
+    });
+
+    document.getElementById('btnYearNext').addEventListener('click', function() {
+      goToYear(state.year + 1);
+    });
 
     function focusSelectedWeek(smooth){
       if(smooth===undefined) smooth=true;
@@ -1303,13 +1389,13 @@
     // ── Restricciones de edición ──────────────────────────────────
     function applyEditRestrictions() {
       var canEdit = state.canEdit;
-      document.getElementById('saveServer').style.display  = canEdit ? '' : 'none';
-      document.getElementById('exportJson').style.display  = canEdit ? '' : 'none';
+      document.getElementById('saveServer').style.display = canEdit ? '' : 'none';
+      document.getElementById('exportJson').style.display = canEdit ? '' : 'none';
       var importLabel = document.querySelector('label[for="importJson"]');
       if (importLabel) importLabel.style.display           = canEdit ? '' : 'none';
-      document.getElementById('addPerson').style.display   = canEdit ? '' : 'none';
+      document.getElementById('addPerson').style.display = canEdit ? '' : 'none';
       document.getElementById('addEventBtn').style.display = canEdit ? '' : 'none';
-      document.getElementById('addIcalBtn').style.display  = canEdit ? '' : 'none';
+      document.getElementById('addIcalBtn').style.display = canEdit ? '' : 'none';
       document.querySelectorAll('.person-item .person-edit').forEach(function(el) {
         el.disabled = !canEdit; el.style.pointerEvents = canEdit ? '' : 'none'; el.style.opacity = canEdit ? '' : '0.5';
       });
@@ -1346,11 +1432,19 @@
     }
 
     // ── renderAll ─────────────────────────────────────────────────
-    function renderAll(){
-      renderPeople(); renderEventsList(); renderIcalList(); renderWeeks(); renderStats(); renderCalendar();
-      if(state.view==='month') renderMonthView();
+    function renderAll() {
+      renderPeople();
+      renderEventsList();
+      renderIcalList();
+      renderWeeks();
+      renderStats();
+      renderCalendar();
+
+      if (state.view === 'month') renderMonthView();
+
       updateThemeButton();
       applyEditRestrictions();
+      updateYearNav();
     }
 
     // ── API ───────────────────────────────────────────────────────
@@ -1423,7 +1517,151 @@
       catch(err){setStatus('Error importando: '+err.message,'error');alert(err.message);}
       finally{e.target.value='';}
     });
+	document.addEventListener('keydown', function(e) {
+	  // Solo en vista mensual y si no hay un input/modal activo
+	  if (document.activeElement.tagName === 'INPUT' ||
+		  document.activeElement.tagName === 'TEXTAREA' ||
+		  document.activeElement.tagName === 'SELECT') return;
 
+	  if (state.view !== 'month') return;
+
+	  if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (state.currentMonth === 0) {
+        goToYear(state.year - 1);
+      } else {
+        state.currentMonth--;
+        renderAll();
+      }
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      if (state.currentMonth === 11) {
+        goToYear(state.year + 1);
+      } else {
+        state.currentMonth++;
+        renderAll();
+      }
+    }
+	});
+	
+	function exportIcal(personFilter) {
+	  function dateToIcal(isoOrDate) {
+		// Parsear como fecha local ignorando la hora UTC
+		var d = new Date(isoOrDate);
+		var y = d.getUTCFullYear();
+		var m = String(d.getUTCMonth() + 1).padStart(2, '0');
+		var day = String(d.getUTCDate() + 1).padStart(2, '0'); // +1 porque es T23:00 del día anterior
+		return '' + y + m + day;
+	  }
+
+	  function dateToIcalEnd(isoOrDate) {
+      var d = new Date(isoOrDate);
+      var y = d.getUTCFullYear();
+      var m = String(d.getUTCMonth() + 1).padStart(2, '0');
+      var day = String(d.getUTCDate() + 1).padStart(2, '0');
+      return y + m + day;
+    }
+
+	  var lines = [
+		'BEGIN:VCALENDAR',
+		'VERSION:2.0',
+		'PRODID:-//Guardias//Calendar//ES',
+		'CALSCALE:GREGORIAN',
+		'METHOD:PUBLISH',
+		'X-WR-CALNAME:Guardias ' + state.year + (personFilter ? ' - ' + personFilter : ''),
+		'X-WR-TIMEZONE:Europe/Madrid',
+	  ];
+
+	  state.weeks.forEach(function(week) {
+		var people = [];
+		if (week.first  && (!personFilter || week.first  === personFilter)) people.push({ name: week.first,  pos: '1ª' });
+		if (week.second && (!personFilter || week.second === personFilter)) people.push({ name: week.second, pos: '2ª' });
+
+		people.forEach(function(p) {
+		  var uid     = 'guardia-' + week.id + '-' + p.pos + '-' + state.year + '@guardias';
+		  var dtstart = dateToIcal(week.start);
+		  var dtend   = dateToIcalEnd(week.end);
+		  var summary     = 'Guardia ' + p.pos + ': ' + p.name;
+		  var description = 'Semana: ' + week.label + (week.paid ? ' (Pagada)' : ' (Pendiente)');
+
+		  lines.push('BEGIN:VEVENT');
+		  lines.push('UID:' + uid);
+		  lines.push('DTSTART;VALUE=DATE:' + dtstart);
+		  lines.push('DTEND;VALUE=DATE:'   + dtend);
+		  lines.push('SUMMARY:'     + summary);
+		  lines.push('DESCRIPTION:' + description);
+		  lines.push('END:VEVENT');
+		});
+	  });
+
+	  lines.push('END:VCALENDAR');
+
+	  var content = lines.join('\r\n');
+	  var blob = new Blob([content], { type: 'text/calendar;charset=utf-8;' });
+	  var url  = URL.createObjectURL(blob);
+	  var a    = document.createElement('a');
+	  a.href     = url;
+	  a.download = 'guardias-' + state.year + (personFilter ? '-' + personFilter : '') + '.ics';
+	  a.click();
+	  URL.revokeObjectURL(url);
+	}
+	
+	document.getElementById('icalExportBtn').addEventListener('click', function() {
+    var names = personNames();
+    if (!names.length) {
+      setStatus('No hay personas definidas.', 'error');
+      return;
+    }
+
+    var sel = document.getElementById('icalPersonSelect');
+    sel.innerHTML = '<option value="">Todos</option>' +
+      names.map(function(n) {
+        return '<option value="' + n + '">' + n + '</option>';
+      }).join('');
+
+    var modal = document.getElementById('icalExportModal');
+    modal.style.display = 'flex';
+  });
+
+  document.getElementById('icalModalCloseBtn').addEventListener('click', function() {
+    document.getElementById('icalExportModal').style.display = 'none';
+  });
+
+  document.getElementById('icalExportModal').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+
+  document.getElementById('icalDownloadBtn').addEventListener('click', function() {
+    var person = document.getElementById('icalPersonSelect').value || null;
+    exportIcal(person);
+    setStatus('iCal descargado' + (person ? ' para ' + person : ' para todos') + '.', 'ok');
+    document.getElementById('icalExportModal').style.display = 'none';
+  });
+
+  document.getElementById('icalCopyUrlBtn').addEventListener('click', function() {
+    var person = document.getElementById('icalPersonSelect').value || null;
+
+    fetch('/api/calendars/' + calendarId + '/year/' + state.year + '/ical-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('guardias-token')
+      },
+      body: JSON.stringify({ person: person })
+    })
+      .then(function(res) {
+        return res.json();
+      })
+      .then(function(data) {
+        navigator.clipboard.writeText(data.url).then(function() {
+          setStatus('URL de suscripción copiada. Válida 1 año.', 'ok');
+          document.getElementById('icalExportModal').style.display = 'none';
+        });
+      })
+      .catch(function() {
+        setStatus('Error generando URL de suscripción.', 'error');
+      });
+  });
     // ── Init ──────────────────────────────────────────────────────
     (async function(){
       state.currentMonth=new Date().getMonth();
