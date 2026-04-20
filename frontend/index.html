@@ -64,94 +64,68 @@
       padding: 20px;
     }
 
-    .topbar {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-    }
-    .brand {
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
+    .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .brand  { display:flex; align-items:center; gap:12px; }
     .logo-wrap {
       width:46px; height:46px; border-radius:16px;
       display:grid; place-items:center;
-      background: var(--md-primary);
-      color: var(--md-on-primary);
-      font-weight:700;
+      background: var(--md-primary); color: var(--md-on-primary); font-weight:700;
     }
     h1 { font-size: 1.6rem; }
     .sub { color: var(--md-on-surface-var); }
 
     .btn {
-      min-height: 36px;
-      border-radius: var(--r-pill);
-      border: 1px solid var(--md-outline-var);
-      background: var(--md-surface-container);
-      padding: 0 14px;
-      display:inline-flex; align-items:center; justify-content:center;
+      min-height: 36px; border-radius: var(--r-pill);
+      border: 1px solid var(--md-outline-var); background: var(--md-surface-container);
+      padding: 0 14px; display:inline-flex; align-items:center; justify-content:center;
       cursor:pointer; transition:.18s ease;
     }
-    .btn.primary {
-      background: var(--md-primary);
-      color: var(--md-on-primary);
-      border-color: transparent;
-    }
-    .btn.small { min-height: 30px; font-size: 0.9rem; padding: 0 10px; }
-    .btn.danger { background: #b3261e; color: #fff; border-color: transparent; }
-    .btn:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
+    .btn.primary { background: var(--md-primary); color: var(--md-on-primary); border-color: transparent; }
+    .btn.small   { min-height: 30px; font-size: 0.9rem; padding: 0 10px; }
+    .btn.danger  { background: #b3261e; color: #fff; border-color: transparent; }
+    .btn:hover   { box-shadow: var(--shadow-2); transform: translateY(-1px); }
 
     .status {
-      padding: 10px 14px;
-      border-radius: 18px;
-      border: 1px solid var(--md-outline-var);
-      background: var(--md-surface);
-      color: var(--md-on-surface-var);
-      font-size: 0.9rem;
+      padding: 10px 14px; border-radius: 18px;
+      border: 1px solid var(--md-outline-var); background: var(--md-surface);
+      color: var(--md-on-surface-var); font-size: 0.9rem;
     }
-    .status.error { color: var(--md-error); border-color: var(--md-error); }
-    .status.ok    { color: var(--md-success); border-color: var(--md-success); }
+    .status.error { color: var(--md-error);   border-color: var(--md-error); }
+    .status.ok    { color: var(--md-success);  border-color: var(--md-success); }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--md-on-surface); color: var(--md-surface);
+      padding: 10px 22px; border-radius: var(--r-pill);
+      font-size: 0.92rem; box-shadow: var(--shadow-2);
+      opacity: 0; transition: opacity .25s ease, transform .25s ease;
+      pointer-events: none; z-index: 9999; white-space: nowrap;
+    }
+    #toast.show  { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.ok    { background: var(--md-success); color: #fff; }
+    #toast.error { background: var(--md-error);   color: #fff; }
 
     .layout {
-      display:grid;
-      grid-template-columns: 280px 1.1fr 1.1fr;
-      gap: 12px;
-      align-items:flex-start;
+      display:grid; grid-template-columns: 280px 1.1fr 1.1fr;
+      gap: 12px; align-items:flex-start;
     }
-    @media (max-width: 1100px) {
-      .layout { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
 
     .field {
-      width: 100%;
-      min-height: 36px;
-      border-radius: 12px;
-      border: 1px solid var(--md-outline-var);
-      background: var(--md-surface);
-      padding: 0 10px;
-      font-size: 0.95rem;
+      width: 100%; min-height: 36px; border-radius: 12px;
+      border: 1px solid var(--md-outline-var); background: var(--md-surface);
+      padding: 0 10px; font-size: 0.95rem;
     }
-    .field-row {
-      display:grid; gap:6px; margin-bottom: 8px;
-    }
+    .field-row { display:grid; gap:6px; margin-bottom: 8px; }
     label { font-size: 0.85rem; color: var(--md-on-surface-var); }
 
-    .list {
-      display:grid;
-      gap:6px;
-      margin-top: 8px;
-    }
+    .list { display:grid; gap:6px; margin-top: 8px; }
     .list-item {
-      padding:8px 10px;
-      border-radius: 14px;
-      border: 1px solid var(--md-outline-var);
-      background: var(--md-surface);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      cursor:pointer;
+      padding:8px 10px; border-radius: 14px;
+      border: 1px solid var(--md-outline-var); background: var(--md-surface);
+      display:flex; justify-content:space-between; align-items:center; cursor:pointer;
     }
     .list-item.selected {
       border-color: var(--md-primary);
@@ -159,49 +133,30 @@
     }
     .list-item-title { font-weight: 600; font-size:0.95rem; }
     .badge {
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 0.75rem;
-      border: 1px solid var(--md-outline-var);
-      background: var(--md-surface-container);
+      border-radius: 999px; padding: 3px 8px; font-size: 0.75rem;
+      border: 1px solid var(--md-outline-var); background: var(--md-surface-container);
     }
     .badge.admin { background: color-mix(in srgb, var(--md-primary) 20%, transparent); }
 
     .tiny-row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+    .section-title { font-weight: 600; margin-bottom:4px; font-size: 1rem; }
 
-    .section-title {
-      font-weight: 600;
-      margin-bottom:4px;
-      font-size: 1rem;
+    .admin-mini-list {
+      max-height: 420px; overflow:auto; border-radius: 12px;
+      border: 1px solid var(--md-outline-var); background: var(--md-surface);
+      padding:6px; margin-top:4px;
     }
-
-    .admin-mini-list { max-height: 420px; overflow:auto; border-radius: 12px; border: 1px solid var(--md-outline-var); background: var(--md-surface); padding:6px; margin-top:4px; }
     .admin-mini-item {
-      display:flex;
-      justify-content:space-between;
-      gap:6px;
-      align-items:center;
-      padding:4px 6px;
-      border-radius:10px;
-      font-size:0.9rem;
+      display:flex; justify-content:space-between; gap:6px;
+      align-items:center; padding:4px 6px; border-radius:10px; font-size:0.9rem;
     }
-    .admin-mini-item:nth-child(odd) {
-      background: var(--md-surface-container);
-    }
+    .admin-mini-item:nth-child(odd) { background: var(--md-surface-container); }
 
-    .year-picker {
-      display:flex;
-      align-items:center;
-      gap:4px;
-    }
-    .year-picker span {
-      min-width: 44px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
+    .year-picker { display:flex; align-items:center; gap:4px; }
+    .year-picker span { min-width: 44px; text-align: center; font-weight: 600; font-size: 0.95rem; }
 
     .hidden { display:none !important; }
+	#statsBar.hidden { display:none !important; }
   </style>
 </head>
 <body>
@@ -222,10 +177,24 @@
       </div>
     </header>
 
-    <div id="statusBox" class="status">No autenticado.</div>
+    <div id="statusBox" class="status hidden">No autenticado.</div>
+	<div id="statsBar" class="hidden" style="display:flex; gap:12px; flex-wrap:wrap;">
+	  <div class="card" style="flex:1; min-width:140px; padding:14px 20px; display:flex; flex-direction:column; align-items:center; gap:4px;">
+		<span style="font-size:1.6rem; font-weight:700;" id="statCalendars">—</span>
+		<span class="sub" style="font-size:0.82rem;">Calendarios</span>
+	  </div>
+	  <div class="card" style="flex:1; min-width:140px; padding:14px 20px; display:flex; flex-direction:column; align-items:center; gap:4px;">
+		<span style="font-size:1.6rem; font-weight:700;" id="statUsers">—</span>
+		<span class="sub" style="font-size:0.82rem;">Usuarios</span>
+	  </div>
+	  <div class="card" style="flex:1; min-width:140px; padding:14px 20px; display:flex; flex-direction:column; align-items:center; gap:4px;">
+		<span style="font-size:1.6rem; font-weight:700;" id="statAdmins">—</span>
+		<span class="sub" style="font-size:0.82rem;">Administradores</span>
+	  </div>
+	</div>
 
     <main class="layout">
-      <!-- Columna izquierda: login / sesión + cambio contraseña propia -->
+      <!-- Columna izquierda -->
       <section class="card">
         <div id="loginView">
           <h2 class="section-title">Iniciar sesión</h2>
@@ -238,18 +207,14 @@
             <input id="loginPass" class="field" type="password" autocomplete="current-password">
           </div>
           <button class="btn primary" id="loginBtn">Entrar</button>
+		  
         </div>
 
         <div id="sessionView" class="hidden">
           <h2 class="section-title">Sesión</h2>
-          <p class="sub" style="margin-bottom:4px;">
-            Conectado como <strong id="sessionUser"></strong>
-          </p>
-          <p class="sub" style="margin-bottom:8px;">
-            Rol: <span class="badge" id="roleBadge"></span>
-          </p>
+          <p class="sub" style="margin-bottom:4px;">Conectado como <strong id="sessionUser"></strong></p>
+          <p class="sub" style="margin-bottom:8px;">Rol: <span class="badge" id="roleBadge"></span></p>
           <button class="btn small" id="logoutBtn2">Cerrar sesión</button>
-
           <div style="margin-top:16px;">
             <h3 class="section-title">Cambiar mi contraseña</h3>
             <div class="field-row">
@@ -268,9 +233,7 @@
       <!-- Columna central: usuarios (solo admin) -->
       <section class="card">
         <h2 class="section-title">Usuarios</h2>
-        <p class="sub" style="margin-bottom:8px;">
-          Solo los administradores pueden crear y gestionar usuarios.
-        </p>
+        <p class="sub" style="margin-bottom:8px;">Solo los administradores pueden crear y gestionar usuarios.</p>
 
         <div id="usersAdminPanel" class="hidden">
           <div class="field-row">
@@ -288,9 +251,21 @@
               <option value="admin">Administrador</option>
             </select>
           </div>
-          <button class="btn small primary" id="adminCreateUserBtn">Crear usuario</button>
+          <div class="tiny-row" style="gap:6px; margin-bottom:4px;">
+            <button class="btn small primary" id="adminCreateUserBtn">Crear usuario</button>
+            <button class="btn small" id="exportUsersBtn">⬇️ Exportar CSV</button>
+          </div>
 
           <h3 class="section-title" style="margin-top:12px;">Usuarios existentes</h3>
+          <div class="tiny-row" style="margin-bottom:6px; gap:6px;">
+            <input id="userSearchInput" class="field" type="text" placeholder="🔍 Filtrar usuarios..." style="flex:1;">
+            <select id="userSortSelect" class="field" style="width:auto; min-height:36px; padding:0 8px; font-size:0.85rem;">
+              <option value="name-asc">A→Z</option>
+              <option value="name-desc">Z→A</option>
+              <option value="role-admin">Admins primero</option>
+              <option value="role-user">Usuarios primero</option>
+            </select>
+          </div>
           <div id="adminUsersList" class="admin-mini-list"></div>
         </div>
 
@@ -302,11 +277,8 @@
       <!-- Columna derecha: calendarios + permisos -->
       <section class="card">
         <h2 class="section-title">Calendarios</h2>
-        <p class="sub" style="margin-bottom:8px;">
-          Crea calendarios y asigna permisos. Los usuarios verán solo los suyos.
-        </p>
+        <p class="sub" style="margin-bottom:8px;">Crea calendarios y asigna permisos. Los usuarios verán solo los suyos.</p>
 
-        <!-- Bloque creación: solo admin -->
         <div id="calCreateBlock" class="hidden">
           <div class="field-row">
             <label for="adminCalName">Nombre</label>
@@ -368,11 +340,8 @@
           <div class="tiny-row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <div>
               <h3 class="section-title" style="margin-bottom:2px;">Permisos del calendario</h3>
-              <p class="sub" id="adminAssignmentsInfo" style="font-size:0.8rem;">
-                Ningún calendario seleccionado.
-              </p>
+              <p class="sub" id="adminAssignmentsInfo" style="font-size:0.8rem;">Ningún calendario seleccionado.</p>
             </div>
-            <!-- Selector de año + botón abrir -->
             <div class="tiny-row" style="gap:4px;">
               <div class="year-picker" id="yearPicker">
                 <button class="btn small" id="yearPrev">&#8592;</button>
@@ -380,12 +349,16 @@
                 <button class="btn small" id="yearNext">&#8594;</button>
               </div>
               <button class="btn small primary" id="openCalendarBtn">Abrir calendario</button>
+              <button class="btn small" id="copyCalUrlBtn" title="Copiar enlace">🔗</button>
             </div>
           </div>
           <div id="adminAssignmentsList" class="admin-mini-list" style="margin-top:6px;"></div>
-          <button class="btn small primary" id="adminSaveAssignmentsBtn" style="margin-top:6px;">
-            Guardar permisos
-          </button>
+          <div class="tiny-row" style="margin-top:6px; gap:6px;">
+			  <button class="btn small primary" id="adminSaveAssignmentsBtn">Guardar permisos</button>
+			  <button class="btn small" id="assignAllViewBtn">👁️ Todos ver</button>
+			  <button class="btn small" id="assignAllEditBtn">✏️ Todos editar</button>
+			  <button class="btn small danger" id="assignNoneBtn">🚫 Quitar todos</button>
+			</div>
         </div>
       </section>
     </main>
@@ -393,13 +366,10 @@
 
   <script>
     const state = {
-      token: null,
-      user: null,
-      calendars: [],
-      currentCal: null,
-      currentYear: null,
-      users: [],
-      assignments: []
+      token: null, user: null, calendars: [],
+      currentCal: null, currentYear: null,
+      users: [], assignments: [],
+      _userCalMap: {}
     };
 
     function mapRegionToCode(value) {
@@ -411,11 +381,19 @@
       return 'ES';
     }
 
+    var _toastTimer = null;
     function setStatus(msg, type) {
       if (!type) type = '';
       var box = document.getElementById('statusBox');
       box.textContent = msg;
-      box.className = 'status' + (type ? ' ' + type : '');
+      box.className = 'status hidden' + (type ? ' ' + type : '');
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = type ? 'show ' + type : 'show';
+      if (_toastTimer) clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(function() {
+        toast.className = toast.className.replace('show', '').trim();
+      }, 3000);
     }
 
     function apiFetch(path, opts) {
@@ -436,21 +414,14 @@
       var display = document.getElementById('yearDisplay');
       var btnPrev = document.getElementById('yearPrev');
       var btnNext = document.getElementById('yearNext');
-
       if (!state.currentCal) {
-        display.textContent = '—';
-        btnPrev.disabled = true;
-        btnNext.disabled = true;
-        return;
+        display.textContent = '—'; btnPrev.disabled = true; btnNext.disabled = true; return;
       }
-
       var minYear = state.currentCal.start_year;
       var maxYear = state.currentCal.start_year + state.currentCal.years_span - 1;
-
       if (!state.currentYear || state.currentYear < minYear || state.currentYear > maxYear) {
         state.currentYear = minYear;
       }
-
       display.textContent = state.currentYear;
       btnPrev.disabled = state.currentYear <= minYear;
       btnNext.disabled = state.currentYear >= maxYear;
@@ -458,154 +429,126 @@
 
     document.getElementById('yearPrev').addEventListener('click', function() {
       if (!state.currentCal) return;
-      var minYear = state.currentCal.start_year;
-      if (state.currentYear > minYear) {
-        state.currentYear--;
-        updateYearPicker();
-      }
+      if (state.currentYear > state.currentCal.start_year) { state.currentYear--; updateYearPicker(); }
     });
-
     document.getElementById('yearNext').addEventListener('click', function() {
       if (!state.currentCal) return;
       var maxYear = state.currentCal.start_year + state.currentCal.years_span - 1;
-      if (state.currentYear < maxYear) {
-        state.currentYear++;
-        updateYearPicker();
-      }
+      if (state.currentYear < maxYear) { state.currentYear++; updateYearPicker(); }
     });
 
     // ---- Auth ----
     async function login(username, password) {
       try {
         var res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: username, password: password })
         });
-        var data = {};
-        try { data = await res.json(); } catch(e) {}
-        if (!res.ok) {
-          console.error('Login error', res.status, data);
-          throw new Error(data.error || 'Error de login');
-        }
-        state.token = data.token;
-        state.user = data.user;
+        var data = {}; try { data = await res.json(); } catch(e) {}
+        if (!res.ok) { throw new Error(data.error || 'Error de login'); }
+        state.token = data.token; state.user = data.user;
         localStorage.setItem('guardias-token', state.token);
         setStatus('Autenticado como ' + state.user.username + ' (' + state.user.role + ').', 'ok');
         renderAuthState();
         await loadCalendars();
-        if (state.user.role === 'admin') {
-          await loadUsers();
-        }
+        if (state.user.role === 'admin') await loadUsers();
       } catch (e) {
-        console.error('Login exception', e);
         setStatus(e.message || 'Error de login', 'error');
       }
     }
 
     function logout() {
-      state.token = null;
-      state.user = null;
-      state.calendars = [];
-      state.currentCal = null;
-      state.currentYear = null;
-      state.users = [];
-      state.assignments = [];
+      state.token = null; state.user = null; state.calendars = [];
+      state.currentCal = null; state.currentYear = null;
+      state.users = []; state.assignments = []; state._userCalMap = {};
       localStorage.removeItem('guardias-token');
       setStatus('No autenticado.');
-      renderAuthState();
-      renderCalendarList();
-      renderAdminUsers();
-      renderAdminAssignments();
-      updateYearPicker();
+      renderAuthState(); renderCalendarList(); renderAdminUsers();
+      renderAdminAssignments(); updateYearPicker();
     }
 
     async function restoreSession() {
       var token = localStorage.getItem('guardias-token');
-      if (!token) {
-        setStatus('No autenticado.');
-        renderAuthState();
-        return;
-      }
+      if (!token) { setStatus('No autenticado.'); renderAuthState(); return; }
       state.token = token;
       try {
         var res = await apiFetch('/api/auth/me');
-        var data = {};
-        try { data = await res.json(); } catch(e) {}
-        if (!res.ok) {
-          console.error('/api/auth/me error', res.status, data);
-          logout();
-          return;
-        }
+        var data = {}; try { data = await res.json(); } catch(e) {}
+        if (!res.ok) { logout(); return; }
         state.user = data.user;
         setStatus('Sesión restaurada como ' + state.user.username + '.', 'ok');
         renderAuthState();
         await loadCalendars();
-        if (state.user.role === 'admin') {
-          await loadUsers();
-        }
-      } catch (e) {
-        console.error('restoreSession exception', e);
-        logout();
-      }
+        if (state.user.role === 'admin') await loadUsers();
+      } catch (e) { logout(); }
     }
+	
+	function updateStats() {
+	  var bar = document.getElementById('statsBar');
+	  if (!state.user || state.user.role !== 'admin') {
+		bar.classList.add('hidden');
+		return;
+	  }
+	  bar.classList.remove('hidden');
 
+	  var totalCals   = state.calendars.length;
+	  var totalUsers  = state.users.length;
+	  var totalAdmins = state.users.filter(function(u) { return u.role === 'admin'; }).length;
+
+
+	  document.getElementById('statCalendars').textContent = totalCals;
+	  document.getElementById('statUsers').textContent     = totalUsers;
+	  document.getElementById('statAdmins').textContent    = totalAdmins;
+	}
+	
     function renderAuthState() {
-      var loginView = document.getElementById('loginView');
-      var sessionView = document.getElementById('sessionView');
-      var userInfo = document.getElementById('userInfo');
-      var logoutBtn = document.getElementById('logoutBtn');
-      var logoutBtn2 = document.getElementById('logoutBtn2');
-      var roleBadge = document.getElementById('roleBadge');
-      var usersAdminPanel = document.getElementById('usersAdminPanel');
-      var usersHint = document.getElementById('usersHint');
-      var calendarsCard = document.querySelector('main.layout section.card:nth-of-type(3)');
-      var subtitle = document.getElementById('subtitle');
-      var savePermBtn = document.getElementById('adminSaveAssignmentsBtn');
+      var loginView        = document.getElementById('loginView');
+      var sessionView      = document.getElementById('sessionView');
+      var userInfo         = document.getElementById('userInfo');
+      var logoutBtn        = document.getElementById('logoutBtn');
+      var logoutBtn2       = document.getElementById('logoutBtn2');
+      var roleBadge        = document.getElementById('roleBadge');
+      var usersAdminPanel  = document.getElementById('usersAdminPanel');
+      var usersHint        = document.getElementById('usersHint');
+      var calendarsCard    = document.querySelector('main.layout section.card:nth-of-type(3)');
+      var subtitle         = document.getElementById('subtitle');
+      var savePermBtn      = document.getElementById('adminSaveAssignmentsBtn');
       var adminAssignmentsList = document.getElementById('adminAssignmentsList');
-      var calCreateBlock = document.getElementById('calCreateBlock');
-      var apiDocsBtn = document.getElementById('apiDocsBtn');
+      var calCreateBlock   = document.getElementById('calCreateBlock');
+      var apiDocsBtn       = document.getElementById('apiDocsBtn');
 
       if (!state.user) {
-        loginView.classList.remove('hidden');
-        sessionView.classList.add('hidden');
-        userInfo.textContent = '';
-        logoutBtn.classList.add('hidden');
-        logoutBtn2.classList.add('hidden');
-        apiDocsBtn.classList.add('hidden');
-        roleBadge.textContent = '';
-        usersAdminPanel.classList.add('hidden');
+        loginView.classList.remove('hidden'); sessionView.classList.add('hidden');
+        userInfo.textContent = ''; logoutBtn.classList.add('hidden');
+        logoutBtn2.classList.add('hidden'); apiDocsBtn.classList.add('hidden');
+        roleBadge.textContent = ''; usersAdminPanel.classList.add('hidden');
         usersHint.classList.remove('hidden');
         if (calendarsCard) calendarsCard.classList.add('hidden');
         subtitle.textContent = 'Autenticación y administración de calendarios';
         return;
       }
 
-      loginView.classList.add('hidden');
-      sessionView.classList.remove('hidden');
+      loginView.classList.add('hidden'); sessionView.classList.remove('hidden');
       document.getElementById('sessionUser').textContent = state.user.username;
       userInfo.textContent = state.user.username;
-      logoutBtn.classList.remove('hidden');
-      logoutBtn2.classList.remove('hidden');
+      logoutBtn.classList.remove('hidden'); logoutBtn2.classList.remove('hidden');
       if (calendarsCard) calendarsCard.classList.remove('hidden');
       roleBadge.textContent = state.user.role === 'admin' ? 'Administrador' : 'Usuario';
       roleBadge.className = 'badge' + (state.user.role === 'admin' ? ' admin' : '');
 
       if (state.user.role === 'admin') {
-        usersAdminPanel.classList.remove('hidden');
-        usersHint.classList.add('hidden');
+        usersAdminPanel.classList.remove('hidden'); usersHint.classList.add('hidden');
         savePermBtn.disabled = false;
-        adminAssignmentsList.classList.remove('hidden');
-        calCreateBlock.classList.remove('hidden');
-        apiDocsBtn.classList.remove('hidden');
+		savePermBtn.classList.remove('hidden');
+		adminAssignmentsList.classList.remove('hidden');
+        calCreateBlock.classList.remove('hidden'); apiDocsBtn.classList.remove('hidden');
         subtitle.textContent = 'Panel de administración de guardias';
       } else {
-        usersAdminPanel.classList.add('hidden');
-        usersHint.classList.remove('hidden');
-        savePermBtn.disabled = true;
-        adminAssignmentsList.classList.add('hidden');
-        calCreateBlock.classList.add('hidden');
-        apiDocsBtn.classList.add('hidden');
+        usersAdminPanel.classList.add('hidden'); usersHint.classList.remove('hidden');
+		savePermBtn.disabled = true;
+		savePermBtn.classList.add('hidden');
+		adminAssignmentsList.classList.add('hidden');
+        calCreateBlock.classList.add('hidden'); apiDocsBtn.classList.add('hidden');
         subtitle.textContent = 'Seleccione uno de sus calendarios asignados';
       }
     }
@@ -615,52 +558,35 @@
       if (!state.user) return;
       try {
         var res = await apiFetch('/api/calendars');
-        var data = {};
-        try { data = await res.json(); } catch(e) {}
-        if (!res.ok) {
-          console.error('/api/calendars error', res.status, data);
-          setStatus('Error cargando calendarios.', 'error');
-          return;
-        }
+        var data = {}; try { data = await res.json(); } catch(e) {}
+        if (!res.ok) { setStatus('Error cargando calendarios.', 'error'); return; }
         state.calendars = data;
         renderCalendarList();
-      } catch (e) {
-        console.error('loadCalendars exception', e);
-        setStatus('Error de red cargando calendarios.', 'error');
-      }
+		updateStats();
+      } catch (e) { setStatus('Error de red cargando calendarios.', 'error'); }
     }
 
     function renderCalendarList() {
       var container = document.getElementById('calendarList');
       container.innerHTML = '';
       if (!state.user) return;
-
-      if (!state.calendars.length) {
-        container.innerHTML = '<p class="sub">No hay calendarios.</p>';
-        return;
-      }
-
+      if (!state.calendars.length) { container.innerHTML = '<p class="sub">No hay calendarios.</p>'; return; }
       var weekNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
       var isAdmin = state.user.role === 'admin';
 
       state.calendars.forEach(function(cal) {
         var item = document.createElement('div');
         item.className = 'list-item';
-        if (state.currentCal && state.currentCal.id === cal.id) {
-          item.classList.add('selected');
-        }
+        if (state.currentCal && state.currentCal.id === cal.id) item.classList.add('selected');
         var ws = (typeof cal.week_start_js === 'number') ? cal.week_start_js : 1;
-        var weekName = weekNames[ws];
         var delBtnHtml = isAdmin
-          ? '<button class="btn small danger cal-del-btn" data-id="' + cal.id + '" data-name="' + cal.name + '" style="font-size:0.75rem;padding:0 8px;">Borrar</button>'
-          : '';
-
+		  ? '<button class="btn small cal-dup-btn" data-id="' + cal.id + '" data-name="' + cal.name + '" style="font-size:0.75rem;padding:0 8px;" title="Duplicar">⧉</button>' +
+			'<button class="btn small danger cal-del-btn" data-id="' + cal.id + '" data-name="' + cal.name + '" style="font-size:0.75rem;padding:0 8px;">Borrar</button>'
+		  : '';
         item.innerHTML =
           '<div style="flex:1 1 auto; min-width:0;">' +
             '<div class="list-item-title">' + cal.name + '</div>' +
-            '<div class="sub" style="font-size:0.8rem;">' +
-              'Semana desde ' + weekName +
-            '</div>' +
+            '<div class="sub" style="font-size:0.8rem;">Semana desde ' + weekNames[ws] + '</div>' +
           '</div>' +
           '<div class="tiny-row" style="flex:0 0 auto; gap:4px;">' +
             '<span class="badge">Años ' + cal.start_year + '–' + (cal.start_year + cal.years_span - 1) + '</span>' +
@@ -668,24 +594,17 @@
             delBtnHtml +
           '</div>';
 
-        // Click en la fila (no en el botón borrar)
         item.addEventListener('click', function(e) {
           if (e.target.classList.contains('cal-del-btn')) return;
-          state.currentCal = cal;
-          state.currentYear = cal.start_year;
-          renderCalendarList();
-          updateYearPicker();
-          if (state.user.role === 'admin') {
-            loadAssignmentsForCurrentCal();
-          } else {
-            renderAdminAssignments();
-          }
+          state.currentCal = cal; state.currentYear = cal.start_year;
+          renderCalendarList(); updateYearPicker();
+          if (state.user.role === 'admin') loadAssignmentsForCurrentCal();
+          else renderAdminAssignments();
         });
-
         container.appendChild(item);
       });
 
-      // Botones de borrar
+            // Botones de borrar y duplicar
       if (isAdmin) {
         container.querySelectorAll('.cal-del-btn').forEach(function(btn) {
           btn.addEventListener('click', async function(e) {
@@ -695,29 +614,55 @@
             if (!confirm('¿Borrar el calendario "' + name + '"? Esta acción es irreversible.')) return;
             try {
               var res = await apiFetch('/api/calendars/' + id, { method: 'DELETE' });
-              var data = {};
-              try { data = await res.json(); } catch(ex) {}
-              if (!res.ok) {
-                setStatus(data.error || 'Error borrando calendario.', 'error');
-                return;
-              }
+              var data = {}; try { data = await res.json(); } catch(ex) {}
+              if (!res.ok) { setStatus(data.error || 'Error borrando calendario.', 'error'); return; }
               if (state.currentCal && state.currentCal.id === id) {
-                state.currentCal = null;
-                state.currentYear = null;
-                state.assignments = [];
-                updateYearPicker();
-                renderAdminAssignments();
+                state.currentCal = null; state.currentYear = null; state.assignments = [];
+                updateYearPicker(); renderAdminAssignments();
               }
               setStatus('Calendario borrado.', 'ok');
               await loadCalendars();
-            } catch (ex) {
-              console.error('deleteCal exception', ex);
-              setStatus('Error de red borrando calendario.', 'error');
-            }
+            } catch (ex) { setStatus('Error de red borrando calendario.', 'error'); }
+          });
+        });
+
+        container.querySelectorAll('.cal-dup-btn').forEach(function(btn) {
+          btn.addEventListener('click', async function(e) {
+            e.stopPropagation();
+            var id = Number(btn.getAttribute('data-id'));
+            var name = btn.getAttribute('data-name');
+
+            var newName = prompt('Nombre para la copia:', name + ' (copia)');
+            if (newName === null) return;
+
+            var newStartYear = prompt('Año de inicio:', new Date().getFullYear());
+            if (newStartYear === null) return;
+            newStartYear = parseInt(newStartYear);
+            if (isNaN(newStartYear)) { setStatus('Año de inicio inválido.', 'error'); return; }
+
+            var newSpan = prompt('Número de años (rango):', '20');
+            if (newSpan === null) return;
+            newSpan = parseInt(newSpan);
+            if (isNaN(newSpan) || newSpan < 1) { setStatus('Rango de años inválido.', 'error'); return; }
+
+            try {
+              var res = await apiFetch('/api/calendars/' + id + '/duplicate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  name: newName.trim() || name + ' (copia)',
+                  start_year: newStartYear,
+                  years_span: newSpan
+                })
+              });
+              var data = {}; try { data = await res.json(); } catch(ex) {}
+              if (!res.ok) { setStatus(data.error || 'Error duplicando calendario.', 'error'); return; }
+              setStatus('Calendario duplicado como "' + data.name + '".', 'ok');
+              await loadCalendars();
+            } catch (ex) { setStatus('Error de red duplicando calendario.', 'error'); }
           });
         });
       }
-
       renderAdminAssignments();
     }
 
@@ -725,49 +670,91 @@
     async function loadUsers() {
       try {
         var res = await apiFetch('/api/users');
-        var data = {};
-        try { data = await res.json(); } catch(e) {}
-        if (!res.ok) {
-          console.error('/api/users error', res.status, data);
-          return;
-        }
+        var data = {}; try { data = await res.json(); } catch(e) {}
+        if (!res.ok) { console.error('/api/users error', res.status, data); return; }
         state.users = data;
         renderAdminUsers();
-        if (state.currentCal && state.user.role === 'admin') {
-          await loadAssignmentsForCurrentCal();
-        }
-      } catch (e) {
-        console.error('loadUsers exception', e);
-      }
+        if (state.currentCal && state.user.role === 'admin') await loadAssignmentsForCurrentCal();
+        await loadUserCalMap();
+      } catch (e) { console.error('loadUsers exception', e); }
     }
 
+    async function loadUserCalMap() {
+	  if (!state.user || state.user.role !== 'admin') return;
+	  var map = {};
+	  state.users.forEach(function(u) { map[u.id] = []; });
+	  try {
+		for (var i = 0; i < state.calendars.length; i++) {
+		  var cal = state.calendars[i];
+		  var res = await apiFetch('/api/calendars/' + cal.id + '/assignments');
+		  var data = {}; try { data = await res.json(); } catch(e) {}
+		  if (Array.isArray(data)) {
+			data.forEach(function(a) {
+			  if (map[a.user_id] !== undefined) map[a.user_id].push(cal.name);
+			});
+		  }
+		}
+		state._userCalMap = map;
+		renderAdminUsers();
+		updateStats();
+	  } catch(e) { console.error('loadUserCalMap exception', e); }
+	}
+	
     function renderAdminUsers() {
       var container = document.getElementById('adminUsersList');
       if (!container) return;
+
+      var searchInput = document.getElementById('userSearchInput');
+      var filter = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      var sortSelect = document.getElementById('userSortSelect');
+      var sortVal = sortSelect ? sortSelect.value : 'name-asc';
+
       container.innerHTML = '';
       if (!state.users || !state.users.length) {
         container.innerHTML = '<div class="sub" style="font-size:0.8rem;">(Añade usuarios con el formulario)</div>';
         return;
       }
-      state.users.forEach(function(u) {
+
+      var filtered = state.users.filter(function(u) {
+        return u.username.toLowerCase().includes(filter);
+      });
+
+      filtered.sort(function(a, b) {
+        if (sortVal === 'name-asc')   return a.username.localeCompare(b.username);
+        if (sortVal === 'name-desc')  return b.username.localeCompare(a.username);
+        if (sortVal === 'role-admin') return a.role === 'admin' ? -1 : 1;
+        if (sortVal === 'role-user')  return a.role === 'user'  ? -1 : 1;
+        return 0;
+      });
+
+      if (!filtered.length) {
+        container.innerHTML = '<div class="sub" style="font-size:0.8rem;">No se encontraron usuarios.</div>';
+        return;
+      }
+
+      filtered.forEach(function(u) {
         var row = document.createElement('div');
         row.className = 'admin-mini-item';
         var roleSelectId = 'user-role-' + u.id;
-        var passInputId = 'user-pass-' + u.id;
-        var saveBtnId = 'user-save-' + u.id;
-        var delBtnId = 'user-del-' + u.id;
-
+        var passInputId  = 'user-pass-' + u.id;
+        var saveBtnId    = 'user-save-' + u.id;
+        var delBtnId     = 'user-del-'  + u.id;
+        var calList = (state._userCalMap && Array.isArray(state._userCalMap[u.id])) ? state._userCalMap[u.id] : null;
+		var calCount = calList ? calList.length : '?';
+		var calTitle = calList && calList.length ? calList.join('\n') : 'Sin calendarios asignados';
+		var calBadge = '<span class="badge" title="' + calTitle + '" style="font-size:0.7rem; cursor:help;">📅 ' + calCount + '</span>';
+		
+		
         row.innerHTML =
-          '<span style="flex:1 1 auto;">' + u.username + '</span>' +
+          '<span style="flex:1 1 auto; display:flex; align-items:center; gap:6px;">' + calBadge + u.username + '</span>' +
           '<span class="tiny-row" style="flex:0 0 auto; gap:4px; align-items:center;">' +
             '<select id="' + roleSelectId + '" class="field" style="width:auto;min-height:30px;padding:0 6px;font-size:0.8rem;">' +
-              '<option value="user"' + (u.role === 'user' ? ' selected' : '') + '>user</option>' +
+              '<option value="user"'  + (u.role === 'user'  ? ' selected' : '') + '>user</option>' +
               '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>admin</option>' +
             '</select>' +
-            '<input id="' + passInputId + '" class="field" type="password" placeholder="nueva pass" ' +
-              'style="width:110px;min-height:30px;font-size:0.8rem;padding:0 6px;" />' +
+            '<input id="' + passInputId + '" class="field" type="password" placeholder="nueva pass" style="width:110px;min-height:30px;font-size:0.8rem;padding:0 6px;" />' +
             '<button id="' + saveBtnId + '" class="btn small" style="font-size:0.75rem;padding:0 6px;">Guardar</button>' +
-            '<button id="' + delBtnId + '" class="btn small danger" style="font-size:0.75rem;padding:0 6px;">X</button>' +
+            '<button id="' + delBtnId  + '" class="btn small danger" style="font-size:0.75rem;padding:0 6px;">X</button>' +
           '</span>';
 
         container.appendChild(row);
@@ -776,49 +763,39 @@
           var newRole = document.getElementById(roleSelectId).value;
           var newPass = document.getElementById(passInputId).value;
           var payload = { role: newRole };
-          if (newPass && newPass.trim()) {
-            payload.password = newPass.trim();
-          }
+          if (newPass && newPass.trim()) payload.password = newPass.trim();
           try {
             var res = await apiFetch('/api/users/' + u.id, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
+              method: 'PUT', headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
             });
-            var data = {};
-            try { data = await res.json(); } catch(e) {}
-            if (!res.ok) {
-              setStatus(data.error || 'Error actualizando usuario.', 'error');
-              return;
-            }
+            var data = {}; try { data = await res.json(); } catch(e) {}
+            if (!res.ok) { setStatus(data.error || 'Error actualizando usuario.', 'error'); return; }
             setStatus('Usuario actualizado.', 'ok');
             document.getElementById(passInputId).value = '';
             await loadUsers();
-          } catch (e) {
-            console.error('updateUser exception', e);
-            setStatus('Error de red actualizando usuario.', 'error');
-          }
+          } catch (e) { setStatus('Error de red actualizando usuario.', 'error'); }
         });
 
         document.getElementById(delBtnId).addEventListener('click', async function() {
           if (!confirm('¿Eliminar usuario "' + u.username + '"?')) return;
           try {
             var res = await apiFetch('/api/users/' + u.id, { method: 'DELETE' });
-            var data = {};
-            try { data = await res.json(); } catch(e) {}
-            if (!res.ok) {
-              setStatus(data.error || 'Error eliminando usuario.', 'error');
-              return;
-            }
+            var data = {}; try { data = await res.json(); } catch(e) {}
+            if (!res.ok) { setStatus(data.error || 'Error eliminando usuario.', 'error'); return; }
             setStatus('Usuario eliminado.', 'ok');
             await loadUsers();
-          } catch (e) {
-            console.error('deleteUser exception', e);
-            setStatus('Error de red eliminando usuario.', 'error');
-          }
+          } catch (e) { setStatus('Error de red eliminando usuario.', 'error'); }
         });
       });
     }
+
+    document.addEventListener('input', function(e) {
+      if (e.target && e.target.id === 'userSearchInput') renderAdminUsers();
+    });
+    document.addEventListener('change', function(e) {
+      if (e.target && e.target.id === 'userSortSelect') renderAdminUsers();
+    });
 
     // ---- Assignments ----
     function renderAdminAssignments() {
@@ -826,23 +803,14 @@
       var list = document.getElementById('adminAssignmentsList');
       if (!info || !list) return;
       list.innerHTML = '';
-      if (!state.currentCal) {
-        info.textContent = 'Ningún calendario seleccionado.';
-        return;
-      }
-      if (state.user.role !== 'admin') {
-        info.textContent = 'Calendario: ' + state.currentCal.name + ' (solo lectura)';
-        return;
-      }
+      if (!state.currentCal) { info.textContent = 'Ningún calendario seleccionado.'; return; }
+      if (state.user.role !== 'admin') { info.textContent = 'Calendario: ' + state.currentCal.name + ' (solo lectura)'; return; }
       info.textContent = 'Permisos para: ' + state.currentCal.name;
       if (!state.users || !state.users.length) {
-        list.innerHTML = '<div class="sub" style="font-size:0.8rem;">No hay usuarios. Crea alguno primero.</div>';
-        return;
+        list.innerHTML = '<div class="sub" style="font-size:0.8rem;">No hay usuarios. Crea alguno primero.</div>'; return;
       }
       var map = new Map();
-      state.assignments.forEach(function(a) {
-        map.set(a.user_id, !!a.can_edit);
-      });
+      state.assignments.forEach(function(a) { map.set(a.user_id, !!a.can_edit); });
       state.users.forEach(function(u) {
         var row = document.createElement('div');
         row.className = 'admin-mini-item';
@@ -851,12 +819,8 @@
         row.innerHTML =
           '<span>' + u.username + '</span>' +
           '<span>' +
-            '<label style="font-size:0.8rem;">' +
-              '<input type="checkbox" class="assign-view" data-user="' + u.id + '" ' + (hasAssignment ? 'checked' : '') + '> ver' +
-            '</label>' +
-            '<label style="font-size:0.8rem;margin-left:4px;">' +
-              '<input type="checkbox" class="assign-edit" data-user="' + u.id + '" ' + (canEdit ? 'checked' : '') + '> editar' +
-            '</label>' +
+            '<label style="font-size:0.8rem;"><input type="checkbox" class="assign-view" data-user="' + u.id + '" ' + (hasAssignment ? 'checked' : '') + '> ver</label>' +
+            '<label style="font-size:0.8rem;margin-left:4px;"><input type="checkbox" class="assign-edit" data-user="' + u.id + '" ' + (canEdit ? 'checked' : '') + '> editar</label>' +
           '</span>';
         list.appendChild(row);
       });
@@ -866,17 +830,11 @@
       try {
         if (!state.currentCal || state.user.role !== 'admin') return;
         var res = await apiFetch('/api/calendars/' + state.currentCal.id + '/assignments');
-        var data = {};
-        try { data = await res.json(); } catch(e) {}
-        if (!res.ok) {
-          console.error('assignments error', res.status, data);
-          return;
-        }
+        var data = {}; try { data = await res.json(); } catch(e) {}
+        if (!res.ok) { console.error('assignments error', res.status, data); return; }
         state.assignments = data;
         renderAdminAssignments();
-      } catch (e) {
-        console.error('loadAssignments exception', e);
-      }
+      } catch (e) { console.error('loadAssignments exception', e); }
     }
 
     async function saveAssignmentsForCurrentCal() {
@@ -886,46 +844,41 @@
       if (!listEl) return;
       var viewChecks = listEl.querySelectorAll('.assign-view');
       var editChecks = listEl.querySelectorAll('.assign-edit');
-      var mapView = new Map();
-      var mapEdit = new Map();
+      var mapView = new Map(); var mapEdit = new Map();
       viewChecks.forEach(function(ch) { mapView.set(Number(ch.dataset.user), ch.checked); });
       editChecks.forEach(function(ch) { mapEdit.set(Number(ch.dataset.user), ch.checked); });
       var assignments = [];
       state.users.forEach(function(u) {
         var canView = mapView.get(u.id) || false;
         var canEdit = mapEdit.get(u.id) || false;
-        if (canView || canEdit) {
-          assignments.push({ user_id: u.id, can_edit: canEdit });
-        }
+        if (canView || canEdit) assignments.push({ user_id: u.id, can_edit: canEdit });
       });
       try {
         var res = await apiFetch('/api/calendars/' + state.currentCal.id + '/assignments', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ assignments: assignments })
         });
-        var data = {};
-        try { data = await res.json(); } catch(e) {}
-        if (!res.ok) {
-          setStatus('Error guardando permisos.', 'error');
-          return;
-        }
+        var data = {}; try { data = await res.json(); } catch(e) {}
+        if (!res.ok) { setStatus('Error guardando permisos.', 'error'); return; }
         setStatus('Permisos actualizados.', 'ok');
         state.assignments = assignments;
         renderAdminAssignments();
-      } catch (e) {
-        console.error('saveAssignments exception', e);
-        setStatus('Error de red guardando permisos.', 'error');
-      }
+      } catch (e) { setStatus('Error de red guardando permisos.', 'error'); }
     }
 
-    // ---- Eventos ----
+    // ---- Event listeners ----
     document.getElementById('loginBtn').addEventListener('click', function() {
       var u = document.getElementById('loginUser').value.trim();
       var p = document.getElementById('loginPass').value;
       if (!u || !p) { setStatus('Introduce usuario y contraseña.', 'error'); return; }
       login(u, p);
     });
+	document.getElementById('loginPass').addEventListener('keydown', function(e) {
+	  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+	});
+	document.getElementById('loginUser').addEventListener('keydown', function(e) {
+	  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+	});
 
     document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('logoutBtn2').addEventListener('click', logout);
@@ -942,23 +895,15 @@
       if (!oldPass || !newPass) { setStatus('Rellena contraseña actual y nueva.', 'error'); return; }
       try {
         var res = await apiFetch('/api/users/me/password', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ old_password: oldPass, new_password: newPass })
         });
-        var data = {};
-        try { data = await res.json(); } catch(e) {}
-        if (!res.ok) {
-          setStatus(data.error || 'Error al cambiar contraseña.', 'error');
-          return;
-        }
+        var data = {}; try { data = await res.json(); } catch(e) {}
+        if (!res.ok) { setStatus(data.error || 'Error al cambiar contraseña.', 'error'); return; }
         setStatus('Contraseña actualizada.', 'ok');
         document.getElementById('selfOldPass').value = '';
         document.getElementById('selfNewPass').value = '';
-      } catch (e) {
-        console.error('selfChangePass exception', e);
-        setStatus('Error de red al cambiar contraseña.', 'error');
-      }
+      } catch (e) { setStatus('Error de red al cambiar contraseña.', 'error'); }
     });
 
     document.getElementById('adminCreateUserBtn').addEventListener('click', async function() {
@@ -969,54 +914,56 @@
       if (!username || !password) { setStatus('Usuario y contraseña son obligatorios.', 'error'); return; }
       try {
         var res = await apiFetch('/api/users', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: username, password: password, role: role })
         });
-        var data = {};
-        try { data = await res.json(); } catch(e) {}
+        var data = {}; try { data = await res.json(); } catch(e) {}
         if (!res.ok) { throw new Error(data.error || 'Error creando usuario'); }
         setStatus('Usuario creado.', 'ok');
         document.getElementById('adminNewUser').value = '';
         document.getElementById('adminNewPass').value = '';
         await loadUsers();
-      } catch (e) {
-        setStatus(e.message || 'Error creando usuario', 'error');
-      }
+      } catch (e) { setStatus(e.message || 'Error creando usuario', 'error'); }
+    });
+
+    document.getElementById('exportUsersBtn').addEventListener('click', function() {
+      if (!state.users || !state.users.length) { setStatus('No hay usuarios para exportar.', 'error'); return; }
+      var rows = [['ID', 'Usuario', 'Rol', 'Calendarios asignados']];
+      state.users.forEach(function(u) {
+        var calCount = (state._userCalMap && state._userCalMap[u.id] !== undefined) ? state._userCalMap[u.id] : '?';
+        rows.push([u.id, u.username, u.role, calCount]);
+      });
+      var csv = rows.map(function(r) {
+        return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(',');
+      }).join('\r\n');
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'usuarios_' + new Date().toISOString().slice(0,10) + '.csv';
+      a.click(); URL.revokeObjectURL(url);
+      setStatus('CSV exportado.', 'ok');
     });
 
     document.getElementById('adminCreateCalBtn').addEventListener('click', async function() {
-	  if (!state.user || state.user.role !== 'admin') { setStatus('Solo los administradores pueden crear calendarios.', 'error'); return; }
-	  var name      = document.getElementById('adminCalName').value.trim();
-	  var startY    = Number(document.getElementById('adminCalStartYear').value) || new Date().getFullYear();
-	  var span      = Number(document.getElementById('adminCalSpan').value) || 20;
-	  var weekStart = Number(document.getElementById('adminCalWeekStart').value);
-	  var regionCode = mapRegionToCode(document.getElementById('adminCalRegion').value);
-	  if (!name) { setStatus('El nombre es obligatorio.', 'error'); return; }
-	  try {
-		var res = await apiFetch('/api/calendars', {
-		  method: 'POST',
-		  headers: { 'Content-Type': 'application/json' },
-		  body: JSON.stringify({
-			name: name,
-			template_type: 'mon_sun',
-			start_year: startY,
-			years_span: span,
-			week_start_js: weekStart,
-			region_code: regionCode,
-			theme: {}
-		  })
-		});
-		var data = {};
-		try { data = await res.json(); } catch(e) {}
-		if (!res.ok) { throw new Error(data.error || 'Error creando calendario'); }
-		setStatus('Calendario creado.', 'ok');
-		document.getElementById('adminCalName').value = '';
-		await loadCalendars();
-	  } catch (e) {
-		setStatus(e.message || 'Error creando calendario', 'error');
-	  }
-	});
+      if (!state.user || state.user.role !== 'admin') { setStatus('Solo los administradores pueden crear calendarios.', 'error'); return; }
+      var name      = document.getElementById('adminCalName').value.trim();
+      var startY    = Number(document.getElementById('adminCalStartYear').value) || new Date().getFullYear();
+      var span      = Number(document.getElementById('adminCalSpan').value) || 20;
+      var weekStart = Number(document.getElementById('adminCalWeekStart').value);
+      var regionCode = mapRegionToCode(document.getElementById('adminCalRegion').value);
+      if (!name) { setStatus('El nombre es obligatorio.', 'error'); return; }
+      try {
+        var res = await apiFetch('/api/calendars', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, template_type: 'mon_sun', start_year: startY, years_span: span, week_start_js: weekStart, region_code: regionCode, theme: {} })
+        });
+        var data = {}; try { data = await res.json(); } catch(e) {}
+        if (!res.ok) { throw new Error(data.error || 'Error creando calendario'); }
+        setStatus('Calendario creado.', 'ok');
+        document.getElementById('adminCalName').value = '';
+        await loadCalendars();
+      } catch (e) { setStatus(e.message || 'Error creando calendario', 'error'); }
+    });
 
     document.getElementById('adminSaveAssignmentsBtn').addEventListener('click', function() {
       saveAssignmentsForCurrentCal();
@@ -1028,14 +975,67 @@
       window.open(url, '_blank');
     });
 
-    (function init() {
+    document.getElementById('copyCalUrlBtn').addEventListener('click', function() {
+      if (!state.currentCal) { setStatus('Selecciona primero un calendario.', 'error'); return; }
+      var url = window.location.origin + '/viewer.html?calendarId=' + state.currentCal.id + '&year=' + (state.currentYear || state.currentCal.start_year);
+      navigator.clipboard.writeText(url).then(function() {
+        setStatus('Enlace copiado al portapapeles.', 'ok');
+      }).catch(function() {
+        setStatus('No se pudo copiar: ' + url, 'error');
+      });
+    });
+	
+	function checkTokenExpiry() {
+	  var token = state.token;
+	  if (!token) return;
+	  try {
+		var payload = JSON.parse(atob(token.split('.')[1]));
+		var expiresIn = payload.exp * 1000 - Date.now();
+		var thirtyMin = 30 * 60 * 1000;
+		if (expiresIn <= 0) {
+		  logout();
+		  updateStats();
+		  setStatus('Sesión expirada. Inicia sesión de nuevo.', 'error');
+		} else if (expiresIn <= thirtyMin) {
+		  setStatus('Tu sesión expira en menos de 30 minutos.', 'error');
+		}
+	  } catch(e) {}
+	}
+
+	setInterval(checkTokenExpiry, 60 * 1000); // comprueba cada minuto
+	
+	document.getElementById('assignAllViewBtn').addEventListener('click', function() {
+	  var list = document.getElementById('adminAssignmentsList');
+	  if (!list) return;
+	  list.querySelectorAll('.assign-view').forEach(function(ch) { ch.checked = true; });
+	});
+
+	document.getElementById('assignAllEditBtn').addEventListener('click', function() {
+	  var list = document.getElementById('adminAssignmentsList');
+	  if (!list) return;
+	  list.querySelectorAll('.assign-view').forEach(function(ch) { ch.checked = true; });
+	  list.querySelectorAll('.assign-edit').forEach(function(ch) { ch.checked = true; });
+	});
+
+	document.getElementById('assignNoneBtn').addEventListener('click', function() {
+	  var list = document.getElementById('adminAssignmentsList');
+	  if (!list) return;
+	  list.querySelectorAll('.assign-view').forEach(function(ch) { ch.checked = false; });
+	  list.querySelectorAll('.assign-edit').forEach(function(ch) { ch.checked = false; });
+	});
+
+    function init() {
       var theme = localStorage.getItem('guardias-theme') || 'light';
       setTheme(theme);
-      setStatus('No autenticado.');
       renderAuthState();
       updateYearPicker();
       restoreSession();
-    })();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+
   </script>
+
+  <div id="toast"></div>
 </body>
 </html>
